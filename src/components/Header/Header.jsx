@@ -23,7 +23,7 @@ const Header = () => {
                         <li>
                             <a className={styles.jumplinkitem} href="#experience">
                                 <span className={styles.navindicator}></span>
-                                <span className={styles.navtext}>Exper</span>
+                                <span className={styles.navtext}>Experiences</span>
                             </a>
                         </li>
                         <li>
