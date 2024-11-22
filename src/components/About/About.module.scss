@@ -1,0 +1,13 @@
+@use "../../styles/_variable.scss" as _variable;
+
+.sectiontitle {
+    font-size: 0.875rem; /* text-sm */
+    font-weight: bold; /* font-bold */
+    text-transform: uppercase; /* uppercase */
+    letter-spacing: 0.1em; /* tracking-widest */
+    // color: #e2e8f0; /* text-slate-200 */
+
+    @media screen and (min-width: _variable.$large) {
+        display: none;
+    }
+}

@@ -1,0 +1,52 @@
+@use "../../styles/_variable.scss" as _variable;
+
+.sectioncontainer {
+    margin-bottom: 4rem; /* mb-16 */
+    scroll-margin-top: 4rem; /* scroll-mt-16 */
+
+    @media screen and (min-width: _variable.$medium) {
+        margin-bottom: 6rem; /* md:mb-24 */
+    }
+
+    @media screen and (min-width: _variable.$large) {
+        margin-bottom: 9rem; /* lg:mb-36 */
+        scroll-margin-top: 6rem; /* lg:scroll-mt-24 */
+    }
+}
+
+.titlecontainer {
+    position: sticky; /* sticky */
+    top: 0; /* top-0 */
+    z-index: 20; /* z-20 */
+    margin-left: -1.5rem; /* -mx-6 */
+    margin-right: -1.5rem; /* -mx-6 */
+    margin-bottom: 1rem; /* mb-4 */
+    width: 100vw; /* w-screen */
+    // background-color: rgba(31, 41, 55, 0.75); /* bg-slate-900/75 (using rgba for transparency) */
+    padding-left: 1.5rem; /* px-6 */
+    padding-right: 1.5rem; /* px-6 */
+    padding-top: 1.25rem; /* py-5 */
+    padding-bottom: 1.25rem; /* py-5 */
+    backdrop-filter: blur(10px); /* backdrop-blur */
+
+    @media screen and (min-width: _variable.$medium) {
+        margin-left: -3rem; /* md:-mx-12 */
+        margin-right: -3rem; /* md:-mx-12 */
+        padding-left: 3rem; /* md:px-12 */
+        padding-right: 3rem; /* md:px-12 */
+    }
+
+    @media screen and (min-width: _variable.$large) {
+        display: none; /* lg:sr-only (screen readers only) */
+        position: relative; /* lg:relative */
+        top: auto; /* lg:top-auto */
+        margin-left: auto; /* lg:mx-auto */
+        margin-right: auto; /* lg:mx-auto */
+        width: 100%; /* lg:w-full */
+        padding-left: 0; /* lg:px-0 */
+        padding-right: 0; /* lg:px-0 */
+        padding-top: 0; /* lg:py-0 */
+        padding-bottom: 0; /* lg:py-0 */
+        opacity: 0; /* lg:opacity-0 */
+    }
+}

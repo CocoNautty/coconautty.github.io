@@ -1,7 +1,7 @@
-@import "../../styles/variables.scss";
+@use "../../styles/_variable.scss" as _variable;
 
 .header {
-    @media screen and (min-width: $large) {
+    @media screen and (min-width: _variable.$large) {
         position: sticky; /* lg:sticky */
         top: 0; /* lg:top-0 */
         display: flex; /* lg:flex */
@@ -19,7 +19,7 @@
     font-weight: bold; /* font-bold */
     letter-spacing: -0.01562em; /* tracking-tight */
 
-    @media screen and (min-width: $small) {
+    @media screen and (min-width: _variable.$small) {
         font-size: 3rem; /* lg:text-5xl */
     };
 }
@@ -30,7 +30,7 @@
     font-weight: 500; /* font-medium */
     letter-spacing: -0.01562em; /* tracking-tight */
 
-    @media screen and (min-width: $small) {
+    @media screen and (min-width: _variable.$small) {
         font-size: 1.25rem; /* lg:text-xl */
     };
 }
@@ -44,7 +44,7 @@
 .jumplinks {
     display: none; /* hidden */
 
-    @media screen and (min-width: $large) {
+    @media screen and (min-width: _variable.$large) {
         display: block; /* lg:block */
     };
 }

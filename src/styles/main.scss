@@ -1,5 +1,4 @@
-@import "node_modules/normalize-scss/sass/normalize";
+@use "node_modules/normalize-scss/sass/normalize";
 
-@import '_variables.scss';
-@import '_global.scss';
-@import '_variables.scss';
+@use '_variable';
+@use '_global';
