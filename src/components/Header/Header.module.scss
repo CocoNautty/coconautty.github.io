@@ -1,0 +1,96 @@
+@import "../../styles/variables.scss";
+
+.header {
+    @media screen and (min-width: $large) {
+        position: sticky; /* lg:sticky */
+        top: 0; /* lg:top-0 */
+        display: flex; /* lg:flex */
+        max-height: 100vh; /* lg:max-h-screen */
+        width: 50%; /* lg:w-1/2 */
+        flex-direction: column; /* lg:flex-col */
+        justify-content: space-between; /* lg:justify-between */
+        padding-top: 6rem; /* lg:py-24 (padding-top and padding-bottom) */
+        padding-bottom: 6rem; /* lg:py-24 */
+    };
+}
+
+.title {
+    font-size: 2.25rem; /* text-4xl */
+    font-weight: bold; /* font-bold */
+    letter-spacing: -0.01562em; /* tracking-tight */
+
+    @media screen and (min-width: $small) {
+        font-size: 3rem; /* lg:text-5xl */
+    };
+}
+
+.subtitle {
+    margin-top: 0.75rem; /* mt-3 */
+    font-size: 1.125rem; /* text-lg */
+    font-weight: 500; /* font-medium */
+    letter-spacing: -0.01562em; /* tracking-tight */
+
+    @media screen and (min-width: $small) {
+        font-size: 1.25rem; /* lg:text-xl */
+    };
+}
+
+.shortdescription {
+    margin-top: 1rem; /* mt-4 */
+    max-width: 20rem; /* max-w-xs (default Tailwind value for xs) */
+    line-height: 1.5; /* leading-normal */
+}
+
+.jumplinks {
+    display: none; /* hidden */
+
+    @media screen and (min-width: $large) {
+        display: block; /* lg:block */
+    };
+}
+
+.jumplinklist {
+    margin-top: 4rem; /* mt-16 */
+    width: max-content; /* w-max */
+    list-style-type: none; /* list-none */
+    padding: 0; /* p-0 */
+}
+
+.jumplinkitem {
+    display: flex; /* flex */
+    align-items: center; /* items-center */
+    padding-top: 0.75rem; /* py-3 (padding top and bottom) */
+    padding-bottom: 0.75rem; /* py-3 */
+}
+
+.navindicator {
+    margin-right: 1rem; /* mr-4 */
+    height: 1px; /* h-px */
+    width: 2rem; /* w-8 */
+    background-color: #4b5563; /* bg-slate-600 */
+    transition: all 0.2s ease; /* transition-all */
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: none; /* transition-none */
+    };
+}
+
+/* Styles for when the parent with class 'group' is hovered or focused */
+.jumplinkitem:hover .navindicator,
+.jumplinkitem:focus-visible .navindicator {
+    width: 4rem; /* group-hover:w-16 (16 * 0.25rem = 4rem) */
+}
+
+.navtext {
+    font-size: 0.75rem; /* text-xs */
+    font-weight: bold; /* font-bold */
+    text-transform: uppercase; /* uppercase */
+    letter-spacing: 0.1em; /* tracking-widest */
+    color: #6b7280; /* text-slate-500 */
+}
+
+/* Styles for when the parent with class 'group' is hovered or focused */
+.jumplinkitem:hover .navtext,
+.jumplinkitem:focus-visible .navtext {
+    color: black; /* group-hover:text-slate-200 */
+}
