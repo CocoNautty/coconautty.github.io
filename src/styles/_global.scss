@@ -1,11 +1,32 @@
 @use "_variable.scss" as _variable;
 
+* {
+    box-sizing: border-box;
+}
+
+blockquote, dd, dl, figure, h1, h2, h3, h4, h5, h6, hr, p, pre {
+    margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-size: inherit;
+    font-weight: inherit;
+}
+
 body {
-    margin: 0, auto;
+    tab-size: 4;
+    font-variation-settings: normal;
+    margin: 0;
+    line-height: 1.625; /* leading-relaxed */
+    -webkit-font-smoothing: antialiased; /* antialiased */
+}
+
+.App {
+    margin: 0 auto;
     min-height: 100vh;
     max-width: _variable.$xlarge;
     padding: 3rem 1.5rem;
-    font-family: sans-serif;
+    font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
     font-feature-settings: "ss03","cv02","cv11";
 
     @media screen and (min-width: _variable.$medium) {
@@ -13,9 +34,12 @@ body {
     };
 
     @media screen and (min-width: _variable.$large) {
-        margin: 0 15vw;
         padding: 0rem 6rem;
     };
+}
+
+a {
+    text-decoration: none;
 }
 
 .skip {
@@ -34,14 +58,14 @@ body {
     font-weight: bold;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: black;
+    color: _variable.$main-content;
 
     &:focus {
         transform: translateX(0); /* translate-x-0 */
     }
 }
 
-.App {
+.wrapper {
     @media screen and (min-width: _variable.$large) {
         display: flex;
         justify-content: space-between;
@@ -51,6 +75,7 @@ body {
 
 .MainContent {
     padding-top: 6rem; /* pt-24 */
+    font-size: 1rem;
 
     @media screen and (min-width: _variable.$large) {
         width: 50%; /* lg:w-1/2 */

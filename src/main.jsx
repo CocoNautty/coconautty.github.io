@@ -5,7 +5,6 @@ import './styles/main.scss'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <a class="skip" href="#content">Skip to Content</a>
     <App />
   </StrictMode>
 )

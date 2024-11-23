@@ -5,10 +5,13 @@ import About from './components/About/About';
 function App() {
     return (
         <div className="App">
-            <Header />
-            <main id='content' className='MainContent'>
-                <About />
-            </main>
+            <a class="skip" href="#content">Skip to Content</a>
+            <div className="wrapper">
+                <Header />
+                <main id='content' className='MainContent'>
+                    <About />
+                </main>
+            </div>
         </div>
     );
 }

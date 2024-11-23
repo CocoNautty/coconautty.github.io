@@ -16,4 +16,12 @@ const TitleContainer = ({ children }) => {
     );
 }
 
-export { SectionContainer, TitleContainer };
+const WordBlock = ({ children }) => {
+    return (
+        <p className={styles.wordblock}>
+            {children}
+        </p>
+    );
+}
+
+export { SectionContainer, TitleContainer, WordBlock };

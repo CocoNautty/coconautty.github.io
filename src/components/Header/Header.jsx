@@ -25,7 +25,8 @@ const Header = () => {
 
     const SocialLink = ({ title, icon, link }) => (
         <li className={styles.sociallinkitem} title={title}>
-            <a href={link}>
+            <a href={link} target='_blank' rel="noopener noreferrer" aria-label='Github (opens in a new tab)'>
+                <span className={styles.sociallinkindicator}>Github</span>
                 {icon}
             </a>
         </li>
@@ -34,9 +35,11 @@ const Header = () => {
     return (
         <header className={styles.header}>
             <div>
-                <h1 className={styles.title}>
-                    <a href="/">Yixuan Chen</a>
-                </h1>
+                <a href="/">
+                    <h1 className={styles.title}>
+                        Yixuan Chen (陈奕煊)
+                    </h1>
+                </a>
                 <h2 className={styles.subtitle}>MSI Student in UMich</h2>
                 <p className={styles.shortdescription}>
                     I learn, I code, I build. I put things together and make them work.
@@ -52,7 +55,7 @@ const Header = () => {
             <ul className={styles.sociallinks}>
                 <IconContext.Provider value={{ className: styles.sociallinkicon }}>
                     {sociallinks.map(link => (
-                        <SocialLink key={link.title} title={link.title} icon={link.icon} />
+                        <SocialLink key={link.title} title={link.title} icon={link.icon} link={link.link} />
                     ))}
                 </IconContext.Provider>
             </ul>
