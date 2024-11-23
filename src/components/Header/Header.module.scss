@@ -94,3 +94,26 @@
 .jumplinkitem:focus-visible .navtext {
     color: black; /* group-hover:text-slate-200 */
 }
+
+.sociallinks {
+    margin-left: 0.25rem; /* ml-1 */
+    margin-top: 2rem; /* mt-8 */
+    display: flex; /* flex */
+    align-items: center; /* items-center */
+    list-style-type: none; /* list-none */
+    padding: 0; /* p-0 */
+}
+
+.sociallinkitem {
+    margin-right: 1.25rem; /* mr-5 */
+    flex-shrink: 0; /* shrink-0 */
+    line-height: 2.5rem;
+}
+
+.sociallinkicon {
+    font-size: 2rem; /* text-xs */
+
+    &:hover {
+        color: #e2e8f0; /* hover:text-slate-200 */
+    }
+}
