@@ -1,5 +1,6 @@
 import styles from './Containers.module.scss';
 import React, { useEffect, useState, useRef } from 'react';
+import { debounce } from 'lodash'
 
 const SectionContainer = ({ id, children }) => {
     return (
@@ -14,7 +15,7 @@ const TitleContainer = ({ children }) => {
     const stickyRef = useRef(null);
 
     useEffect(() => {
-        const eventHandler = () => {
+        const eventHandler = debounce(() => {
         if (stickyRef.current) {
             const windowWidth = window.innerWidth;
             const { top } = stickyRef.current.getBoundingClientRect();
@@ -23,20 +24,20 @@ const TitleContainer = ({ children }) => {
                 setIsPinned(top <= 0);
             }
         }
-        };
+        });
 
         window.addEventListener('scroll', eventHandler);
         window.addEventListener('resize', eventHandler);
 
         // Clean up the event listener on component unmount
         return () => {
-        window.removeEventListener('scroll', eventHandler);
-        window.removeEventListener('resize', eventHandler);
+            window.removeEventListener('scroll', eventHandler);
+            window.removeEventListener('resize', eventHandler);
         };
     }, []);
 
     return (
-        <div ref={stickyRef} className={`${styles.titlecontainer} ${!isPinned ? styles.notPinned : styles.Pinned}`}>
+        <div ref={stickyRef} className={`${styles.titlecontainer} ${isPinned ? styles.Pinned : styles.notPinned}`}>
             {children}
         </div>
     );
