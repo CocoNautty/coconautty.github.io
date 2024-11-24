@@ -1,6 +1,5 @@
 import styles from './Containers.module.scss';
 import React, { useEffect, useState, useRef } from 'react';
-import { throttle } from 'lodash'
 
 const SectionContainer = ({ id, children }) => {
     return (
@@ -15,7 +14,7 @@ const TitleContainer = ({ children }) => {
     const stickyRef = useRef(null);
 
     useEffect(() => {
-        const eventHandler = throttle(() => {
+        const eventHandler = () => {
         if (stickyRef.current) {
             const windowWidth = window.innerWidth;
             const { top } = stickyRef.current.getBoundingClientRect();
@@ -24,7 +23,7 @@ const TitleContainer = ({ children }) => {
                 setIsPinned(top <= 3);
             }
         }
-        }, 100);
+        };
 
         window.addEventListener('scroll', eventHandler);
 
