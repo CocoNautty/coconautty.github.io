@@ -27,12 +27,10 @@ const TitleContainer = ({ children }) => {
         }, 100);
 
         window.addEventListener('scroll', eventHandler);
-        window.addEventListener('resize', eventHandler);
 
         // Clean up the event listener on component unmount
         return () => {
             window.removeEventListener('scroll', eventHandler);
-            window.removeEventListener('resize', eventHandler);
         };
     }, []);
 
