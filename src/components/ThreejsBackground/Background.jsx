@@ -52,7 +52,7 @@ const ThreeBackground = ({scrollableheight}) => {
 
         // Position the camera
         camera.position.set(0, 0, 10);
-        let camera_lookat = new THREE.Vector3(1.5, 5, 0);
+        let camera_lookat = new THREE.Vector3(2, 5, 0);
         camera.lookAt(camera_lookat);
 
         // Store references
