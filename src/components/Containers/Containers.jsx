@@ -1,6 +1,6 @@
 import styles from './Containers.module.scss';
 import React, { useEffect, useState, useRef } from 'react';
-import { debounce } from 'lodash'
+import { throttle } from 'lodash'
 
 const SectionContainer = ({ id, children }) => {
     return (
@@ -15,7 +15,7 @@ const TitleContainer = ({ children }) => {
     const stickyRef = useRef(null);
 
     useEffect(() => {
-        const eventHandler = debounce(() => {
+        const eventHandler = throttle(() => {
         if (stickyRef.current) {
             const windowWidth = window.innerWidth;
             const { top } = stickyRef.current.getBoundingClientRect();
