@@ -28,10 +28,10 @@ const TitleContainer = ({ children }) => {
 
         window.addEventListener('scroll', eventHandler);
 
-        // // Clean up the event listener on component unmount
-        // return () => {
-        //     window.removeEventListener('scroll', eventHandler);
-        // };
+        // Clean up the event listener on component unmount
+        return () => {
+            window.removeEventListener('scroll', eventHandler);
+        };
     }, []);
 
     return (
