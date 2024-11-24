@@ -12,14 +12,22 @@ const SectionContainer = ({ id, children }) => {
 const TitleContainer = ({ children }) => {
     const [isPinned, setIsPinned] = useState(false);
     const stickyRef = useRef(null);
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
     useEffect(() => {
         const eventHandler = () => {
         if (stickyRef.current) {
-            const { top } = stickyRef.current.getBoundingClientRect();
+            const newWindowWidth = window.innerWidth;
             const computedStyle = window.getComputedStyle(stickyRef.current);
-            // Check if the sticky element is pinned (top is 0 or below the viewport)
+            const { top } = stickyRef.current.getBoundingClientRect();
+            if (newWindowWidth === windowWidth) {
+                // Check if the sticky element is pinned (top is 0 or below the viewport)
+                setIsPinned(top <= 0);
+            } else {
+                // Check if the sticky element is pinned (top is 0 or below the viewport)
                 setIsPinned(top <= 0 && computedStyle.opacity !== '0');
+                setWindowWidth(newWindowWidth);
+            }
         }
         };
 
