@@ -139,7 +139,7 @@ const ThreeBackground = ({scrollableheight}) => {
                 const scrollY = window.scrollY;
 
                 camera.position.y = -scrollY * windowHeight * 0.015 / scrollableheight; // Adjust sensitivity as needed
-                camera.position.x = -scrollY * windowWidth * 0.002 / scrollableheight; // Adjust sensitivity as needed
+                camera.position.x = -scrollY * windowWidth * 0.0002 / scrollableheight; // Adjust sensitivity as needed
                 camera.lookAt(camera_lookat);
             }
         };
