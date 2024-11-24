@@ -27,6 +27,7 @@
     padding-top: 1.25rem; /* py-5 */
     padding-bottom: 1.25rem; /* py-5 */
     transition: backdrop-filter 0s;
+    -webkit-overflow-scrolling: touch; /* overflow-scrolling-touch */
 
     &.notPinned{
         backdrop-filter: none; /* backdrop-none */
