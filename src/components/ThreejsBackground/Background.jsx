@@ -1,0 +1,170 @@
+import React, { useEffect, useRef } from 'react';
+import * as THREE from 'three';
+
+const ThreeBackground = () => {
+    const mountRef = useRef(null);
+    const cameraRef = useRef(null);
+    const rendererRef = useRef(null);
+    const sceneRef = useRef(null);
+    const animationRef = useRef(null); // Store animation frame reference for cleanup
+    const mouseActiveRef = useRef(false); // Flag to determine if mouse is active
+    const rotationSpeedRef = useRef({
+        x: 0,
+        y: 0,
+        z: 0
+    }); // Store current rotation speeds
+
+    useEffect(() => {
+        // Check for reduced motion preference
+        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        // Scene setup
+        const scene = new THREE.Scene();
+
+        // Set up orthographic camera
+        const aspectRatio = window.innerWidth / window.innerHeight;
+        let cameraWidth = 5; // Width of the camera view
+        const cameraHeight = cameraWidth / aspectRatio; // Height based on aspect ratio
+        const camera = new THREE.OrthographicCamera(
+            -cameraWidth,   // left
+            cameraWidth,    // right
+            cameraHeight,   // top
+            -cameraHeight,  // bottom
+            0.1,            // near
+            1000            // far
+        );
+
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+
+        // Set the size of the renderer
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio); // Set pixel ratio for high-DPI displays
+        mountRef.current.appendChild(renderer.domElement);
+
+        const geometry = new THREE.DodecahedronGeometry(5, 1);
+        const material = new THREE.MeshBasicMaterial({ color: 0xcccccc, wireframe: true });
+        const dodecahedron = new THREE.Mesh(geometry, material);
+        scene.add(dodecahedron);
+
+        // Position the camera
+        camera.position.set(0, 0, 10);
+        let camera_lookat = new THREE.Vector3(2, 5, 0);
+        camera.lookAt(camera_lookat);
+
+        // Store references
+        cameraRef.current = camera;
+        rendererRef.current = renderer;
+        sceneRef.current = scene;
+
+        // Function to set random rotation speeds
+        const setRandomRotationSpeeds = () => {
+            rotationSpeedRef.current = {
+                x: (Math.random() - 0.5) * 0.001, // Random speed for x-axis
+                y: (Math.random() - 0.5) * 0.001, // Random speed for y-axis
+                z: (Math.random() - 0.5) * 0.001  // Random speed for z-axis
+            };
+        };
+
+        const resetRandomRotationSpeeds = () => {
+            rotationSpeedRef.current = {
+                x: 0,
+                y: 0,
+                z: 0
+            };
+        };
+
+        // Initial random rotation speeds
+        setRandomRotationSpeeds();
+
+        // Animation loop
+        const animate = () => {
+            if (!prefersReducedMotion) { // Only animate if reduced motion is not preferred
+                // Rotate dodecahedron
+                if (mouseActiveRef.current) {
+                    // If mouse is active, do not rotate automatically
+                    // Optionally, you can also reset the rotation speed or direction here
+                } else {
+                    // If mouse is not active, rotate automatically
+                    dodecahedron.rotation.x += rotationSpeedRef.current.x; // Rotate the dodecahedron
+                    dodecahedron.rotation.y += rotationSpeedRef.current.y;
+                    dodecahedron.rotation.z += rotationSpeedRef.current.z;
+                }
+                renderer.render(scene, camera);
+                animationRef.current = requestAnimationFrame(animate);
+            }
+        };
+
+        // Start the animation loop
+        if (!prefersReducedMotion) {
+            animate();
+        }
+
+        // Mouse move event
+        const onMouseMove = (event) => {
+            mouseActiveRef.current = true; // Set mouse active flag
+            if (!prefersReducedMotion) { // Only rotate dodecahedron if reduced motion is not preferred
+                resetRandomRotationSpeeds(); // Reset rotation speed when mouse is active
+
+                const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+                const mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+
+                dodecahedron.rotation.x += mouseX * 0.01; // Adjust sensitivity as needed
+                dodecahedron.rotation.y += mouseY * 0.01; // Adjust sensitivity as needed
+            }
+
+            // Reset the mouse activity after a timeout
+            clearTimeout(mouseActiveRef.current);
+            mouseActiveRef.current = setTimeout(() => {
+                mouseActiveRef.current = false; // Reset after inactivity
+                setRandomRotationSpeeds(); // Change rotation direction when mouse is inactive
+            }, 1000); // 1 second of inactivity to reset
+        };
+
+        // Scroll event
+        const onScroll = () => {
+            if (!prefersReducedMotion) { // Only move camera if reduced motion is not preferred
+                const scrollY = window.scrollY;
+
+                camera.position.y = -scrollY * 0.001; // Adjust sensitivity as needed
+                camera.lookAt(camera_lookat);
+            }
+        };
+
+        // Resize event
+        const onResize = () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+
+            // Update aspect ratio and camera size
+            const newAspectRatio = width / height;
+            const newCameraHeight = cameraWidth / newAspectRatio; // Maintain proportional height
+
+            camera.left = -cameraWidth;
+            camera.right = cameraWidth;
+            camera.top = newCameraHeight;
+            camera.bottom = -newCameraHeight;
+
+
+            camera.updateProjectionMatrix(); // Update the camera projection matrix
+            renderer.setSize(width, height);
+        };
+
+        // Event listeners
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('scroll', onScroll);
+        window.addEventListener('resize', onResize);
+
+        // Cleanup
+        return () => {
+            window.removeEventListener('mousemove', onMouseMove);
+            window.removeEventListener('scroll', onScroll);
+            window.removeEventListener('resize', onResize);
+            cancelAnimationFrame(animationRef.current); // Stop the animation loop when unmounting
+            mountRef.current.removeChild(renderer.domElement);
+        };
+    }, []);
+
+    return <div ref={mountRef} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: -1 }} />;
+};
+
+export default ThreeBackground;

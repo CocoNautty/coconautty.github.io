@@ -26,7 +26,15 @@
     padding-right: 1.5rem; /* px-6 */
     padding-top: 1.25rem; /* py-5 */
     padding-bottom: 1.25rem; /* py-5 */
-    backdrop-filter: blur(10px); /* backdrop-blur */
+    transition: backdrop-filter 0.5s; /* transition duration-500 */
+
+    &.notPinned{
+        backdrop-filter: none; /* backdrop-none */
+    }
+
+    &.Pinned{
+        backdrop-filter: blur(10px); /* backdrop-blur */
+    }
 
     @media screen and (min-width: _variable.$medium) {
         margin-left: -3rem; /* md:-mx-12 */
