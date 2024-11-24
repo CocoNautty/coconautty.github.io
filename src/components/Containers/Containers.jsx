@@ -24,7 +24,7 @@ const TitleContainer = ({ children }) => {
                 setIsPinned(top <= 0);
             }
         }
-        });
+        }, 100);
 
         window.addEventListener('scroll', eventHandler);
         window.addEventListener('resize', eventHandler);
