@@ -14,19 +14,22 @@ const TitleContainer = ({ children }) => {
     const stickyRef = useRef(null);
 
     useEffect(() => {
-        const handleScroll = () => {
+        const eventHandler = () => {
         if (stickyRef.current) {
             const { top } = stickyRef.current.getBoundingClientRect();
+            const computedStyle = window.getComputedStyle(stickyRef.current);
             // Check if the sticky element is pinned (top is 0 or below the viewport)
-            setIsPinned(top <= 0);
+                setIsPinned(top <= 0 && computedStyle.opacity !== '0');
         }
         };
 
-        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('scroll', eventHandler);
+        window.addEventListener('resize', eventHandler);
 
         // Clean up the event listener on component unmount
         return () => {
-        window.removeEventListener('scroll', handleScroll);
+        window.removeEventListener('scroll', eventHandler);
+        window.removeEventListener('resize', eventHandler);
         };
     }, []);
 
