@@ -41,6 +41,14 @@
         margin-right: -3rem; /* md:-mx-12 */
         padding-left: 3rem; /* md:px-12 */
         padding-right: 3rem; /* md:px-12 */
+
+        &.notPinned{
+            backdrop-filter: none; /* backdrop-none */
+        }
+
+        &.Pinned{
+            backdrop-filter: blur(10px); /* backdrop-blur */
+        }
     }
 
     @media screen and (min-width: _variable.$large) {
@@ -55,6 +63,10 @@
         padding-top: 0; /* lg:py-0 */
         padding-bottom: 0; /* lg:py-0 */
         opacity: 0; /* lg:opacity-0 */
+
+        &.notPinned{
+            backdrop-filter: none; /* backdrop-none */
+        }
     }
 }
 

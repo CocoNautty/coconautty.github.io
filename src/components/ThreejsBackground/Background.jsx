@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-const ThreeBackground = () => {
+const ThreeBackground = ({scrollableheight}) => {
     const mountRef = useRef(null);
     const cameraRef = useRef(null);
     const rendererRef = useRef(null);
@@ -13,6 +13,7 @@ const ThreeBackground = () => {
         y: 0,
         z: 0
     }); // Store current rotation speeds
+    const lastMousePositionRef = useRef({ x: 0, y: 0 }); // Track last mouse position
 
     useEffect(() => {
         // Check for reduced motion preference
@@ -36,8 +37,11 @@ const ThreeBackground = () => {
 
         const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 
+        let windowWidth = window.innerWidth;
+        let windowHeight = window.innerHeight;
+
         // Set the size of the renderer
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setSize(windowWidth, windowHeight);
         renderer.setPixelRatio(window.devicePixelRatio); // Set pixel ratio for high-DPI displays
         mountRef.current.appendChild(renderer.domElement);
 
@@ -48,7 +52,7 @@ const ThreeBackground = () => {
 
         // Position the camera
         camera.position.set(0, 0, 10);
-        let camera_lookat = new THREE.Vector3(2, 5, 0);
+        let camera_lookat = new THREE.Vector3(1.5, 5, 0);
         camera.lookAt(camera_lookat);
 
         // Store references
@@ -59,9 +63,9 @@ const ThreeBackground = () => {
         // Function to set random rotation speeds
         const setRandomRotationSpeeds = () => {
             rotationSpeedRef.current = {
-                x: (Math.random() - 0.5) * 0.001, // Random speed for x-axis
-                y: (Math.random() - 0.5) * 0.001, // Random speed for y-axis
-                z: (Math.random() - 0.5) * 0.001  // Random speed for z-axis
+                x: (Math.random() - 0.5) * 0.005, // Random speed for x-axis
+                y: (Math.random() - 0.5) * 0.005, // Random speed for y-axis
+                z: (Math.random() - 0.5) * 0.005  // Random speed for z-axis
             };
         };
 
@@ -104,12 +108,21 @@ const ThreeBackground = () => {
             mouseActiveRef.current = true; // Set mouse active flag
             if (!prefersReducedMotion) { // Only rotate dodecahedron if reduced motion is not preferred
                 resetRandomRotationSpeeds(); // Reset rotation speed when mouse is active
+                // Calculate displacement based on the last mouse position
+                const currentMousePosition = { x: event.clientX, y: event.clientY };
 
-                const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-                const mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+                // Calculate the displacement
+                const displacementX = currentMousePosition.x - lastMousePositionRef.current.x;
+                const displacementY = currentMousePosition.y - lastMousePositionRef.current.y;
 
-                dodecahedron.rotation.x += mouseX * 0.01; // Adjust sensitivity as needed
-                dodecahedron.rotation.y += mouseY * 0.01; // Adjust sensitivity as needed
+                // Update rotation based on displacement
+                dodecahedron.rotation.x -= displacementY * 0.001; // Adjust sensitivity as needed
+                dodecahedron.rotation.y -= displacementX * 0.001; // Adjust sensitivity as needed
+
+                // Store the current mouse position for the next event
+                lastMousePositionRef.current = currentMousePosition;
+
+                resetRandomRotationSpeeds(); // Change rotation direction when mouse is active
             }
 
             // Reset the mouse activity after a timeout
@@ -117,7 +130,7 @@ const ThreeBackground = () => {
             mouseActiveRef.current = setTimeout(() => {
                 mouseActiveRef.current = false; // Reset after inactivity
                 setRandomRotationSpeeds(); // Change rotation direction when mouse is inactive
-            }, 1000); // 1 second of inactivity to reset
+            }, 10); // 0.001 second of inactivity to reset
         };
 
         // Scroll event
@@ -125,18 +138,19 @@ const ThreeBackground = () => {
             if (!prefersReducedMotion) { // Only move camera if reduced motion is not preferred
                 const scrollY = window.scrollY;
 
-                camera.position.y = -scrollY * 0.001; // Adjust sensitivity as needed
+                camera.position.y = -scrollY * windowHeight * 0.015 / scrollableheight; // Adjust sensitivity as needed
+                camera.position.x = -scrollY * windowWidth * 0.002 / scrollableheight; // Adjust sensitivity as needed
                 camera.lookAt(camera_lookat);
             }
         };
 
         // Resize event
         const onResize = () => {
-            const width = window.innerWidth;
-            const height = window.innerHeight;
+            windowWidth = window.innerWidth;
+            windowHeight = window.innerHeight;
 
             // Update aspect ratio and camera size
-            const newAspectRatio = width / height;
+            const newAspectRatio = windowWidth / windowHeight;
             const newCameraHeight = cameraWidth / newAspectRatio; // Maintain proportional height
 
             camera.left = -cameraWidth;
@@ -146,7 +160,7 @@ const ThreeBackground = () => {
 
 
             camera.updateProjectionMatrix(); // Update the camera projection matrix
-            renderer.setSize(width, height);
+            renderer.setSize(windowWidth, windowHeight);
         };
 
         // Event listeners
