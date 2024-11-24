@@ -22,8 +22,11 @@ const ThreeBackground = ({scrollableheight}) => {
         // Scene setup
         const scene = new THREE.Scene();
 
+        let windowWidth = window.innerWidth;
+        let windowHeight = window.innerHeight;
+
         // Set up orthographic camera
-        const aspectRatio = window.innerWidth / window.innerHeight;
+        const aspectRatio = windowWidth / windowHeight;
         let cameraWidth = 5; // Width of the camera view
         const cameraHeight = cameraWidth / aspectRatio; // Height based on aspect ratio
         const camera = new THREE.OrthographicCamera(
@@ -36,9 +39,6 @@ const ThreeBackground = ({scrollableheight}) => {
         );
 
         const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-
-        let windowWidth = window.innerWidth;
-        let windowHeight = window.innerHeight;
 
         // Set the size of the renderer
         renderer.setSize(windowWidth, windowHeight);
@@ -138,8 +138,11 @@ const ThreeBackground = ({scrollableheight}) => {
             if (!prefersReducedMotion) { // Only move camera if reduced motion is not preferred
                 const scrollY = window.scrollY;
 
-                camera.position.y = -scrollY * windowHeight * 0.015 / scrollableheight; // Adjust sensitivity as needed
+                camera.position.y = -scrollY * windowHeight * 0.01 / scrollableheight; // Adjust sensitivity as needed
                 camera.position.x = -scrollY * windowWidth * 0.0002 / scrollableheight; // Adjust sensitivity as needed
+
+                console.log("Camera position: ", camera.position);
+
                 camera.lookAt(camera_lookat);
             }
         };

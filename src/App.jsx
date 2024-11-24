@@ -5,7 +5,7 @@ import ThreeBackground from './components/ThreejsBackground/Background';
 
 function App() {
     const scrollableRef = useRef(null);
-    const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+    const [dimensions, setDimensions] = useState({ width: 500, height: 2000 });
     useEffect(() => {
         if (scrollableRef.current) {
             const { width, height } = scrollableRef.current.getBoundingClientRect();
@@ -13,10 +13,11 @@ function App() {
         }
     }, []);
 
-    console.log(dimensions);
+    console.log("Scollable height: ", dimensions.height);
 
     return (
         <div>
+            <ThreeBackground scrollableheight={dimensions.height}/>
             <div className="App">
                 <a className="skip" href="#content">Skip to Content</a>
                 <div className="wrapper">
@@ -26,7 +27,6 @@ function App() {
                     </main>
                 </div>
             </div>
-            <ThreeBackground scrollableheight={dimensions.height}/>
         </div>
     );
 }
