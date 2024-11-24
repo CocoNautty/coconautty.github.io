@@ -20,7 +20,7 @@ const TitleContainer = ({ children }) => {
             const { top } = stickyRef.current.getBoundingClientRect();
             if (windowWidth <= 768) {
                 // Check if the sticky element is pinned (top is 0 or below the viewport)
-                setIsPinned(top <= 3);
+                setIsPinned(top <= 1);
             }
         }
         };
