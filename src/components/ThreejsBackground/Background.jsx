@@ -37,10 +37,10 @@ const ThreeBackground = ({scrollableheight}) => {
         let cameraWidth = 5; // Width of the camera view
         const cameraHeight = cameraWidth / aspectRatio; // Height based on aspect ratio
         const camera = new THREE.OrthographicCamera(
-            -cameraWidth * 5 / 4,   // left
-            cameraWidth * 5 / 4,    // right
-            cameraHeight * 5 / 4,   // top
-            -cameraHeight * 5 / 4,  // bottom
+            -cameraWidth,   // left
+            cameraWidth,    // right
+            cameraHeight,   // top
+            -cameraHeight,  // bottom
             0.1,            // near
             1000            // far
         );
@@ -51,6 +51,9 @@ const ThreeBackground = ({scrollableheight}) => {
         renderer.setSize(windowWidth, windowHeight);
         renderer.setPixelRatio(window.devicePixelRatio); // Set pixel ratio for high-DPI displays
         mountRef.current.appendChild(renderer.domElement);
+
+        renderer.domElement.style.height = `${windowHeight * 1.25}px`;
+        renderer.domElement.style.width = `${windowWidth * 1.25}px`;
 
         // Create icosahedron geometry and material
         const createIcosahedron = (size) => {
@@ -304,10 +307,10 @@ const ThreeBackground = ({scrollableheight}) => {
             const newAspectRatio = windowWidth / windowHeight;
             const newCameraHeight = cameraWidth / newAspectRatio; // Maintain proportional height
 
-            camera.left = -cameraWidth * 5 / 4;
-            camera.right = cameraWidth * 5 / 4;
-            camera.top = newCameraHeight * 5 / 4;
-            camera.bottom = -newCameraHeight * 5 / 4;
+            camera.left = -cameraWidth;
+            camera.right = cameraWidth;
+            camera.top = newCameraHeight;
+            camera.bottom = -newCameraHeight;
 
             camera.updateProjectionMatrix(); // Update the camera projection matrix
             renderer.setSize(windowWidth, windowHeight);
