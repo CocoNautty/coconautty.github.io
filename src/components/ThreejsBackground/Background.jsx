@@ -49,11 +49,11 @@ const ThreeBackground = ({scrollableheight}) => {
 
         // Set the size of the renderer
         renderer.setSize(windowWidth, windowHeight);
-        renderer.setPixelRatio(window.devicePixelRatio); // Set pixel ratio for high-DPI displays
+        renderer.setPixelRatio(window.devicePixelRatio * 3 / 2); // Set pixel ratio for high-DPI displays
         mountRef.current.appendChild(renderer.domElement);
 
-        renderer.domElement.style.height = `${windowHeight * 1.25}px`;
-        renderer.domElement.style.width = `${windowWidth * 1.25}px`;
+        renderer.domElement.style.height = `${windowHeight * 1.5}px`;
+        renderer.domElement.style.width = `${windowWidth * 1.5}px`;
 
         // Create icosahedron geometry and material
         const createIcosahedron = (size) => {
@@ -121,9 +121,9 @@ const ThreeBackground = ({scrollableheight}) => {
             }
         };
 
-        const geometry0 = new THREE.DodecahedronGeometry(5, 1);
-        const geometry1 = createIcosahedron(sizeRef.current);
-        const geometry2 = new THREE.OctahedronGeometry(1,0);
+        const geometry0 = new THREE.DodecahedronGeometry(5 * 2 / 3, 1);
+        const geometry1 = createIcosahedron(sizeRef.current * 2 / 3);
+        const geometry2 = new THREE.OctahedronGeometry(1 * 2 / 3,0);
 
         const edges0 = new THREE.EdgesGeometry(geometry0);
         const edges1 = new THREE.EdgesGeometry(geometry1);
@@ -149,22 +149,24 @@ const ThreeBackground = ({scrollableheight}) => {
             const scrollY = window.scrollY;
 
             // move octahedron to right bottom
-            octahedron.position.x = -5 + scrollY * windowHeight * 0.002 / scrollableheight;
-            octahedron.position.y = 10 - scrollY * windowHeight * 0.005 / scrollableheight;
-            octahedron.position.z = 7 - scrollY * windowHeight * 0.002 / scrollableheight;
+            octahedron.position.x = -1 + scrollY * windowHeight * 0.002 / scrollableheight;
+            octahedron.position.y = 13 - scrollY * windowHeight * 0.009 / scrollableheight;
+            octahedron.position.z = 1 - scrollY * windowHeight * 0.002 / scrollableheight;
 
             // rotate octahedron
-            octahedron.rotation.x += 0.01;
+            octahedron.rotation.x += 0.00002 * scrollY;
+            octahedron.rotation.y += 0.00004 * scrollY;
         }
 
         // Position the camera
-        camera.position.set(0, 0, 10);
+        camera.position.set(0, 0, 14);
         adjustCameraXY();
-        let camera_lookat = new THREE.Vector3(2, 6, 0);
+        let camera_lookat = new THREE.Vector3(4, 1.8, 0);
         camera.lookAt(camera_lookat);
 
-        icosahedron.position.set(5.5, 8, 2.5);
-        octahedron.position.set(-5, 10, 7);
+        dodecahedron.position.set(0.4, -0.3, -2);
+        icosahedron.position.set(4.7, 4, 1);
+        octahedron.position.set(-1, 10, 1);
 
         adjustOctahedron();
 
@@ -209,9 +211,9 @@ const ThreeBackground = ({scrollableheight}) => {
         const animate = () => {
             if (!prefersReducedMotion) { // Only animate if reduced motion is not preferred
                 // Rotate the icosahedron based on the current speeds
-                icosahedron.rotation.x -= (targetSpeedRef.current.x - rotationSpeedRef.current.x) * 0.2;
-                icosahedron.rotation.y -= (targetSpeedRef.current.y - rotationSpeedRef.current.y) * 0.2;
-                icosahedron.rotation.z -= (targetSpeedRef.current.z - rotationSpeedRef.current.z) * 0.2;
+                icosahedron.rotation.x -= (targetSpeedRef.current.x - rotationSpeedRef.current.x) * 0.7;
+                icosahedron.rotation.y -= (targetSpeedRef.current.y - rotationSpeedRef.current.y) * 0.7;
+                icosahedron.rotation.z -= (targetSpeedRef.current.z - rotationSpeedRef.current.z) * 0.7;
 
                 octahedron.rotation.x += (targetSpeedRef.current.x - rotationSpeedRef.current.x) * 0.3;
                 octahedron.rotation.y += (targetSpeedRef.current.y - rotationSpeedRef.current.y) * 0.3;
@@ -301,8 +303,6 @@ const ThreeBackground = ({scrollableheight}) => {
             windowWidth = window.innerWidth;
             windowHeight = window.innerHeight;
 
-            // only adjust camera if windowWidth has changed
-
             // Update aspect ratio and camera size
             const newAspectRatio = windowWidth / windowHeight;
             const newCameraHeight = cameraWidth / newAspectRatio; // Maintain proportional height
@@ -313,13 +313,18 @@ const ThreeBackground = ({scrollableheight}) => {
             camera.bottom = -newCameraHeight;
 
             camera.updateProjectionMatrix(); // Update the camera projection matrix
+
             renderer.setSize(windowWidth, windowHeight);
+
+            renderer.domElement.style.height = `${windowHeight * 1.5}px`;
+            renderer.domElement.style.width = `${windowWidth * 1.5}px`;
+
 
             adjustOctahedron();
 
             // Change the size of the IcosahedronGeometry
             sizeRef.current = calculateSize(windowWidth); // Example: Adjust size based on window width
-            const newGeometry = createIcosahedron(sizeRef.current);
+            const newGeometry = createIcosahedron(sizeRef.current * 2 / 3);
             updateThickLines(1, new THREE.EdgesGeometry(newGeometry), 0.01);
         };
 
