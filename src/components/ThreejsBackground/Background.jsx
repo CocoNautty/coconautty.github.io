@@ -53,7 +53,7 @@ const ThreeBackground = ({scrollableheight}) => {
 
         // Create icosahedron geometry and material
         const createIcosahedron = (size) => {
-            return new THREE.IcosahedronGeometry(size);
+            return new THREE.IcosahedronGeometry(size, 0);
         };
 
         const calculateSize = (windowWidth) => {
@@ -65,12 +65,43 @@ const ThreeBackground = ({scrollableheight}) => {
 
         sizeRef.current = calculateSize(windowWidth); // Initial size of the icosahedron
 
+        const createThickLines = (edges, thickness) => {
+            const group = new THREE.Group();
+            const lineMaterial = new THREE.MeshBasicMaterial({ color: 0xaaaaaa });
+        
+            for (let i = 0; i < edges.attributes.position.count; i += 2) {
+                const start = new THREE.Vector3().fromBufferAttribute(edges.attributes.position, i);
+                const end = new THREE.Vector3().fromBufferAttribute(edges.attributes.position, i + 1);
+                const direction = new THREE.Vector3().subVectors(end, start);
+                const length = direction.length();
+                const midpoint = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
+        
+                // Create a cylinder geometry
+                const cylinderGeometry = new THREE.CylinderGeometry(thickness, thickness, length, 8);
+                const cylinder = new THREE.Mesh(cylinderGeometry, lineMaterial);
+        
+                // Position the cylinder at the midpoint of the edge
+                cylinder.position.copy(midpoint);
+        
+                // Align the cylinder with the edge direction
+                cylinder.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.clone().normalize());
+        
+                // Add the cylinder to the group
+                group.add(cylinder);
+            }
+        
+            return group;
+        };
+
         const geometry1 = new THREE.DodecahedronGeometry(5, 1);
         const geometry2 = createIcosahedron(sizeRef.current);
 
-        const material = new THREE.MeshBasicMaterial({ color: 0xaaaaaa, wireframe: true });
-        const dodecahedron = new THREE.Mesh(geometry1, material);
-        const icosahedron = new THREE.Mesh(geometry2, material);
+        const edges1 = new THREE.EdgesGeometry(geometry1);
+        const edges2 = new THREE.EdgesGeometry(geometry2);
+
+        // const material = new THREE.LineBasicMaterial({ color: 0xaaaaaa, linewidth: 2 });
+        const dodecahedron = createThickLines(edges1, 0.01);
+        const icosahedron = createThickLines(edges2, 0.01);
 
         scene.add(dodecahedron);
         scene.add(icosahedron);

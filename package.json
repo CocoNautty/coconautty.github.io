@@ -13,6 +13,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-three/drei": "^9.117.3",
+    "@react-three/fiber": "^8.17.10",
     "lodash": "^4.17.21",
     "normalize-scss": "^8.0.0",
     "react": "^18.3.1",
@@ -20,7 +22,8 @@
     "react-router-dom": "^7.0.1",
     "sass": "^1.81.0",
     "sass-migrator": "^2.2.1",
-    "three": "^0.170.0"
+    "three": "^0.170.0",
+    "three.meshline": "^1.4.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
