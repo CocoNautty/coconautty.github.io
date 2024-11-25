@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { throttle } from 'lodash';
+import { create, throttle } from 'lodash';
 
 const ThreeBackground = ({scrollableheight}) => {
     const mountRef = useRef(null);
@@ -62,14 +62,14 @@ const ThreeBackground = ({scrollableheight}) => {
 
         const calculateSize = (windowWidth) => {
             // Calculate A based on the desired maximum value
-            const A = (1000 - 1) * 1;
+            const A = (800 - 1) * 1;
             // Calculate the function value based on the current window width
             return Math.max((A / windowWidth), 1);
         };
 
         sizeRef.current = calculateSize(windowWidth); // Initial size of the icosahedron
 
-        let cylinders = [[], [], []];
+        let cylinders = [[], [], [], []];
 
         const createThickLines = (geometry_name, edges, thickness) => {
             const group = new THREE.Group();
@@ -121,22 +121,26 @@ const ThreeBackground = ({scrollableheight}) => {
             }
         };
 
-        const geometry0 = new THREE.DodecahedronGeometry(5 * 2 / 3, 1);
+        const geometry0 = new THREE.DodecahedronGeometry(5 * 2 / 3, 2);
         const geometry1 = createIcosahedron(sizeRef.current * 2 / 3);
-        const geometry2 = new THREE.OctahedronGeometry(1 * 2 / 3,0);
+        const geometry2 = new THREE.OctahedronGeometry(1 * 2 / 3, 0);
+        const geometry3 = new THREE.BoxGeometry(0.4 * 2 / 3, 0.4 * 2 / 3, 0.4 * 2 / 3);
 
         const edges0 = new THREE.EdgesGeometry(geometry0);
         const edges1 = new THREE.EdgesGeometry(geometry1);
         const edges2 = new THREE.EdgesGeometry(geometry2);
+        const edges3 = new THREE.EdgesGeometry(geometry3);
 
         // const material = new THREE.LineBasicMaterial({ color: 0xaaaaaa, linewidth: 2 });
         const dodecahedron = createThickLines(0, edges0, 0.01);
         const icosahedron = createThickLines(1, edges1, 0.01);
         const octahedron = createThickLines(2, edges2, 0.01);
+        const cube = createThickLines(3, edges3, 0.01);
 
         scene.add(dodecahedron);
         scene.add(icosahedron);
         scene.add(octahedron);
+        scene.add(cube);
 
         const adjustCameraXY = () => {
             const scrollY = window.scrollY;
@@ -164,9 +168,10 @@ const ThreeBackground = ({scrollableheight}) => {
         let camera_lookat = new THREE.Vector3(4, 1.8, 0);
         camera.lookAt(camera_lookat);
 
-        dodecahedron.position.set(0.4, -0.3, -2);
+        dodecahedron.position.set(0.2, -0.5, -2);
         icosahedron.position.set(4.7, 4, 1);
         octahedron.position.set(-1, 8, 1);
+        cube.position.set(camera_lookat.x, camera_lookat.y - 1, camera_lookat.z + 1);
 
         adjustOctahedron();
 
@@ -324,8 +329,11 @@ const ThreeBackground = ({scrollableheight}) => {
 
             // Change the size of the IcosahedronGeometry
             sizeRef.current = calculateSize(windowWidth); // Example: Adjust size based on window width
-            const newGeometry = createIcosahedron(sizeRef.current * 2 / 3);
-            updateThickLines(1, new THREE.EdgesGeometry(newGeometry), 0.01);
+            const newGeometry1 = createIcosahedron(sizeRef.current * 2 / 3);
+            updateThickLines(1, new THREE.EdgesGeometry(newGeometry1), 0.01);
+
+            const newGeometry3 = new THREE.BoxGeometry(sizeRef.current * 0.4 * 2 / 3, sizeRef.current * 0.4 * 2 / 3, sizeRef.current * 0.4 * 2 / 3);
+            updateThickLines(3, new THREE.EdgesGeometry(newGeometry3), 0.01);
         };
 
         // Event listeners
