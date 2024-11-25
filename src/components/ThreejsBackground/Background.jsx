@@ -150,7 +150,7 @@ const ThreeBackground = ({scrollableheight}) => {
 
             // move octahedron to right bottom
             octahedron.position.x = -1 + scrollY * windowHeight * 0.002 / scrollableheight;
-            octahedron.position.y = 13 - scrollY * windowHeight * 0.009 / scrollableheight;
+            octahedron.position.y = 13 - scrollY * windowHeight * 0.007 / scrollableheight;
             octahedron.position.z = 1 - scrollY * windowHeight * 0.002 / scrollableheight;
 
             // rotate octahedron
@@ -166,7 +166,7 @@ const ThreeBackground = ({scrollableheight}) => {
 
         dodecahedron.position.set(0.4, -0.3, -2);
         icosahedron.position.set(4.7, 4, 1);
-        octahedron.position.set(-1, 10, 1);
+        octahedron.position.set(-1, 8, 1);
 
         adjustOctahedron();
 
