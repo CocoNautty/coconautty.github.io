@@ -283,10 +283,22 @@ const ThreeBackground = ({scrollableheight}) => {
             }
         };
 
+        let previousWindowWidth = window.innerWidth;
+
         // Resize event
         const onResize = () => {
+            const currentWindowWidth = window.innerWidth;
+
+            if (currentWindowWidth === previousWindowWidth) {
+                return; // Ignore resize event if the width has not changed
+            }
+
+            previousWindowWidth = currentWindowWidth;
+
             windowWidth = window.innerWidth;
             windowHeight = window.innerHeight;
+
+            // only adjust camera if windowWidth has changed
 
             // Update aspect ratio and camera size
             const newAspectRatio = windowWidth / windowHeight;
