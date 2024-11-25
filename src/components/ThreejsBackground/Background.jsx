@@ -75,21 +75,21 @@ const ThreeBackground = ({scrollableheight}) => {
                 const direction = new THREE.Vector3().subVectors(end, start);
                 const length = direction.length();
                 const midpoint = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
-        
+
                 // Create a cylinder geometry
                 const cylinderGeometry = new THREE.CylinderGeometry(thickness, thickness, length, 8);
                 const cylinder = new THREE.Mesh(cylinderGeometry, lineMaterial);
-        
+
                 // Position the cylinder at the midpoint of the edge
                 cylinder.position.copy(midpoint);
-        
+
                 // Align the cylinder with the edge direction
                 cylinder.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.clone().normalize());
-        
+
                 // Add the cylinder to the group
                 group.add(cylinder);
             }
-        
+
             return group;
         };
 
