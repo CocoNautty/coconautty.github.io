@@ -37,10 +37,10 @@ const ThreeBackground = ({scrollableheight}) => {
         let cameraWidth = 5; // Width of the camera view
         const cameraHeight = cameraWidth / aspectRatio; // Height based on aspect ratio
         const camera = new THREE.OrthographicCamera(
-            -cameraWidth,   // left
-            cameraWidth,    // right
-            cameraHeight,   // top
-            -cameraHeight,  // bottom
+            -cameraWidth * 5 / 4,   // left
+            cameraWidth * 5 / 4,    // right
+            cameraHeight * 5 / 4,   // top
+            -cameraHeight * 5 / 4,  // bottom
             0.1,            // near
             1000            // far
         );
@@ -304,10 +304,10 @@ const ThreeBackground = ({scrollableheight}) => {
             const newAspectRatio = windowWidth / windowHeight;
             const newCameraHeight = cameraWidth / newAspectRatio; // Maintain proportional height
 
-            camera.left = -cameraWidth;
-            camera.right = cameraWidth;
-            camera.top = newCameraHeight;
-            camera.bottom = -newCameraHeight;
+            camera.left = -cameraWidth * 5 / 4;
+            camera.right = cameraWidth * 5 / 4;
+            camera.top = newCameraHeight * 5 / 4;
+            camera.bottom = -newCameraHeight * 5 / 4;
 
             camera.updateProjectionMatrix(); // Update the camera projection matrix
             renderer.setSize(windowWidth, windowHeight);
