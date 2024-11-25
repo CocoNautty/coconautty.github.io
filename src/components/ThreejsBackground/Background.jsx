@@ -147,11 +147,11 @@ const ThreeBackground = ({scrollableheight}) => {
 
             // move octahedron to right bottom
             octahedron.position.x = -5 + scrollY * windowHeight * 0.002 / scrollableheight;
-            octahedron.position.y = 10 - scrollY * windowHeight * 0.007 / scrollableheight;
+            octahedron.position.y = 10 - scrollY * windowHeight * 0.005 / scrollableheight;
             octahedron.position.z = 7 - scrollY * windowHeight * 0.002 / scrollableheight;
 
             // rotate octahedron
-            octahedron.rotation.x += 0.005;
+            octahedron.rotation.x += 0.01;
         }
 
         // Position the camera
