@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { throttle } from 'lodash';
 
 const ThreeBackground = ({scrollableheight}) => {
     const mountRef = useRef(null);
@@ -65,10 +66,12 @@ const ThreeBackground = ({scrollableheight}) => {
 
         sizeRef.current = calculateSize(windowWidth); // Initial size of the icosahedron
 
-        const createThickLines = (edges, thickness) => {
+        let cylinders = [[], [], []];
+
+        const createThickLines = (geometry_name, edges, thickness) => {
             const group = new THREE.Group();
             const lineMaterial = new THREE.MeshBasicMaterial({ color: 0xaaaaaa });
-        
+
             for (let i = 0; i < edges.attributes.position.count; i += 2) {
                 const start = new THREE.Vector3().fromBufferAttribute(edges.attributes.position, i);
                 const end = new THREE.Vector3().fromBufferAttribute(edges.attributes.position, i + 1);
@@ -88,23 +91,49 @@ const ThreeBackground = ({scrollableheight}) => {
 
                 // Add the cylinder to the group
                 group.add(cylinder);
+
+                // Store the cylinder for later updates
+                cylinders[geometry_name].push(cylinder);
             }
 
             return group;
         };
 
-        const geometry1 = new THREE.DodecahedronGeometry(5, 1);
-        const geometry2 = createIcosahedron(sizeRef.current);
+        const updateThickLines = (geometry_name, edges, thickness) => {
+            for (let i = 0; i < edges.attributes.position.count; i += 2) {
+                const start = new THREE.Vector3().fromBufferAttribute(edges.attributes.position, i);
+                const end = new THREE.Vector3().fromBufferAttribute(edges.attributes.position, i + 1);
+                const direction = new THREE.Vector3().subVectors(end, start);
+                const length = direction.length();
+                const midpoint = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
 
+                // Update the geometry of the existing cylinder
+                const cylinder = cylinders[geometry_name][i / 2];
+                cylinder.geometry.dispose();
+                cylinder.geometry = new THREE.CylinderGeometry(thickness, thickness, length, 8);
+
+                // Update the position and orientation
+                cylinder.position.copy(midpoint);
+                cylinder.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.clone().normalize());
+            }
+        };
+
+        const geometry0 = new THREE.DodecahedronGeometry(5, 1);
+        const geometry1 = createIcosahedron(sizeRef.current);
+        const geometry2 = new THREE.OctahedronGeometry(1,0);
+
+        const edges0 = new THREE.EdgesGeometry(geometry0);
         const edges1 = new THREE.EdgesGeometry(geometry1);
         const edges2 = new THREE.EdgesGeometry(geometry2);
 
         // const material = new THREE.LineBasicMaterial({ color: 0xaaaaaa, linewidth: 2 });
-        const dodecahedron = createThickLines(edges1, 0.01);
-        const icosahedron = createThickLines(edges2, 0.01);
+        const dodecahedron = createThickLines(0, edges0, 0.01);
+        const icosahedron = createThickLines(1, edges1, 0.01);
+        const octahedron = createThickLines(2, edges2, 0.01);
 
         scene.add(dodecahedron);
         scene.add(icosahedron);
+        scene.add(octahedron);
 
         const adjustCameraXY = () => {
             const scrollY = window.scrollY;
@@ -113,13 +142,25 @@ const ThreeBackground = ({scrollableheight}) => {
             camera.position.x = -scrollY * windowWidth * 0.005 / scrollableheight; // Adjust sensitivity as needed
         }
 
+        const adjustOctahedron = () => {
+            const scrollY = window.scrollY;
+
+            // move octahedron to right bottom
+            octahedron.position.x = -5 + scrollY * windowHeight * 0.002 / scrollableheight;
+            octahedron.position.y = 10 - scrollY * windowHeight * 0.01 / scrollableheight;
+            octahedron.position.z = 7 - scrollY * windowHeight * 0.001 / scrollableheight;
+        }
+
         // Position the camera
         camera.position.set(0, 0, 10);
         adjustCameraXY();
         let camera_lookat = new THREE.Vector3(2, 6, 0);
         camera.lookAt(camera_lookat);
 
-        icosahedron.position.set(5.5, 8, 1);
+        icosahedron.position.set(5.5, 8, 2.5);
+        octahedron.position.set(-5, 10, 7);
+
+        adjustOctahedron();
 
         // Store references
         cameraRef.current = camera;
@@ -162,9 +203,13 @@ const ThreeBackground = ({scrollableheight}) => {
         const animate = () => {
             if (!prefersReducedMotion) { // Only animate if reduced motion is not preferred
                 // Rotate the icosahedron based on the current speeds
-                icosahedron.rotation.x -= (targetSpeedRef.current.x - rotationSpeedRef.current.x) * 0.1;
-                icosahedron.rotation.y -= (targetSpeedRef.current.y - rotationSpeedRef.current.y) * 0.1;
-                icosahedron.rotation.z -= (targetSpeedRef.current.z - rotationSpeedRef.current.z) * 0.1;
+                icosahedron.rotation.x -= (targetSpeedRef.current.x - rotationSpeedRef.current.x) * 0.2;
+                icosahedron.rotation.y -= (targetSpeedRef.current.y - rotationSpeedRef.current.y) * 0.2;
+                icosahedron.rotation.z -= (targetSpeedRef.current.z - rotationSpeedRef.current.z) * 0.2;
+
+                octahedron.rotation.x += (targetSpeedRef.current.x - rotationSpeedRef.current.x) * 0.3;
+                octahedron.rotation.y += (targetSpeedRef.current.y - rotationSpeedRef.current.y) * 0.3;
+                octahedron.rotation.z += (targetSpeedRef.current.z - rotationSpeedRef.current.z) * 0.3;
 
                 // Rotate dodecahedron
                 if (mouseActiveRef.current) {
@@ -172,9 +217,9 @@ const ThreeBackground = ({scrollableheight}) => {
                     // Optionally, you can also reset the rotation speed or direction here
                 } else {
                     // If mouse is not active, rotate automatically
-                    dodecahedron.rotation.x += rotationSpeedRef.current.x; // Rotate the dodecahedron
-                    dodecahedron.rotation.y += rotationSpeedRef.current.y;
-                    dodecahedron.rotation.z += rotationSpeedRef.current.z;
+                    dodecahedron.rotation.x += rotationSpeedRef.current.x * 0.2; // Rotate the dodecahedron
+                    dodecahedron.rotation.y += rotationSpeedRef.current.y * 0.2;
+                    dodecahedron.rotation.z += rotationSpeedRef.current.z * 0.2;
                 }
                 renderer.render(scene, camera);
                 animationRef.current = requestAnimationFrame(animate);
@@ -193,7 +238,7 @@ const ThreeBackground = ({scrollableheight}) => {
         const speedChangeInterval = setInterval(changeTargetSpeed, 2000); // Change speed every 0.2 seconds
 
         // Mouse move event
-        const onMouseMove = (event) => {
+        const onMouseMove = throttle((event) => {
             mouseActiveRef.current = true; // Set mouse active flag
             if (!prefersReducedMotion) { // Only rotate dodecahedron if reduced motion is not preferred
                 resetRandomRotationSpeeds(); // Reset rotation speed when mouse is active
@@ -205,8 +250,8 @@ const ThreeBackground = ({scrollableheight}) => {
                 const displacementY = currentMousePosition.y - lastMousePositionRef.current.y;
 
                 // Update rotation based on displacement
-                dodecahedron.rotation.x -= displacementY * 0.0003; // Adjust sensitivity as needed
-                dodecahedron.rotation.y -= displacementX * 0.0003; // Adjust sensitivity as needed
+                dodecahedron.rotation.x -= displacementY * 0.00003; // Adjust sensitivity as needed
+                dodecahedron.rotation.y -= displacementX * 0.00003; // Adjust sensitivity as needed
 
                 // Store the current mouse position for the next event
                 lastMousePositionRef.current = currentMousePosition;
@@ -220,12 +265,14 @@ const ThreeBackground = ({scrollableheight}) => {
                 mouseActiveRef.current = false; // Reset after inactivity
                 setRandomRotationSpeeds(); // Change rotation direction when mouse is inactive
             }, 10); // 0.001 second of inactivity to reset
-        };
+        }, 10); // Throttle the event to every 0.01 seconds
 
         // Scroll event
         const onScroll = () => {
             if (!prefersReducedMotion) { // Only move camera if reduced motion is not preferred
                 adjustCameraXY();
+
+                adjustOctahedron();
 
                 console.log("Camera position: ", camera.position);
 
@@ -250,11 +297,12 @@ const ThreeBackground = ({scrollableheight}) => {
             camera.updateProjectionMatrix(); // Update the camera projection matrix
             renderer.setSize(windowWidth, windowHeight);
 
+            adjustOctahedron();
+
             // Change the size of the IcosahedronGeometry
             sizeRef.current = calculateSize(windowWidth); // Example: Adjust size based on window width
             const newGeometry = createIcosahedron(sizeRef.current);
-            icosahedron.geometry.dispose(); // Dispose of the old geometry to free up memory
-            icosahedron.geometry = newGeometry; // Assign the new geometry
+            updateThickLines(1, new THREE.EdgesGeometry(newGeometry), 0.01);
         };
 
         // Event listeners
