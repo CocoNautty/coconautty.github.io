@@ -124,7 +124,7 @@ const ThreeBackground = ({scrollableheight}) => {
         const geometry0 = new THREE.DodecahedronGeometry(5 * 2 / 3, 2);
         const geometry1 = createIcosahedron(sizeRef.current * 2 / 3);
         const geometry2 = new THREE.OctahedronGeometry(1 * 2 / 3, 0);
-        const geometry3 = new THREE.BoxGeometry(0.4 * 2 / 3, 0.4 * 2 / 3, 0.4 * 2 / 3);
+        const geometry3 = new THREE.BoxGeometry(sizeRef.current * 0.4 * 2 / 3,sizeRef.current *  0.4 * 2 / 3,sizeRef.current *  0.4 * 2 / 3);
 
         const edges0 = new THREE.EdgesGeometry(geometry0);
         const edges1 = new THREE.EdgesGeometry(geometry1);
