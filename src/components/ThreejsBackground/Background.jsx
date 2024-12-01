@@ -73,7 +73,7 @@ const ThreeBackground = ({scrollableheight}) => {
 
         const createThickLines = (geometry_name, edges, thickness) => {
             const group = new THREE.Group();
-            const lineMaterial = new THREE.MeshBasicMaterial({ color: 0xaaaaaa });
+            const lineMaterial = new THREE.MeshBasicMaterial({ color: 0x696773, transparent: true, opacity: 0.5 });
 
             for (let i = 0; i < edges.attributes.position.count; i += 2) {
                 const start = new THREE.Vector3().fromBufferAttribute(edges.attributes.position, i);
@@ -121,17 +121,16 @@ const ThreeBackground = ({scrollableheight}) => {
             }
         };
 
-        const geometry0 = new THREE.DodecahedronGeometry(5 * 2 / 3, 2);
+        const geometry0 = new THREE.DodecahedronGeometry(4 * 2 / 3, 2);
         const geometry1 = createIcosahedron(sizeRef.current * 2 / 3);
         const geometry2 = new THREE.OctahedronGeometry(1 * 2 / 3, 0);
-        const geometry3 = new THREE.BoxGeometry(sizeRef.current * 0.4 * 2 / 3,sizeRef.current *  0.4 * 2 / 3,sizeRef.current *  0.4 * 2 / 3);
+        const geometry3 = new THREE.BoxGeometry(sizeRef.current * 0.4 * 2 / 3, sizeRef.current * 0.4 * 2 / 3,sizeRef.current *  0.4 * 2 / 3);
 
         const edges0 = new THREE.EdgesGeometry(geometry0);
         const edges1 = new THREE.EdgesGeometry(geometry1);
         const edges2 = new THREE.EdgesGeometry(geometry2);
         const edges3 = new THREE.EdgesGeometry(geometry3);
 
-        // const material = new THREE.LineBasicMaterial({ color: 0xaaaaaa, linewidth: 2 });
         const dodecahedron = createThickLines(0, edges0, 0.01);
         const icosahedron = createThickLines(1, edges1, 0.01);
         const octahedron = createThickLines(2, edges2, 0.01);
@@ -145,7 +144,7 @@ const ThreeBackground = ({scrollableheight}) => {
         const adjustCameraXY = () => {
             const scrollY = window.scrollY;
 
-            camera.position.y = -scrollY * windowHeight * 0.01 / scrollableheight; // Adjust sensitivity as needed
+            camera.position.y = -scrollY * windowHeight * 0.005 / scrollableheight; // Adjust sensitivity as needed
             camera.position.x = -scrollY * windowWidth * 0.005 / scrollableheight; // Adjust sensitivity as needed
         }
 
@@ -168,7 +167,7 @@ const ThreeBackground = ({scrollableheight}) => {
         let camera_lookat = new THREE.Vector3(4, 1.8, 0);
         camera.lookAt(camera_lookat);
 
-        dodecahedron.position.set(0.2, -0.5, -2);
+        dodecahedron.position.set(0.4, 0.2, -2);
         icosahedron.position.set(4.7, 4, 1);
         octahedron.position.set(-1, 8, 1);
         cube.position.set(camera_lookat.x, camera_lookat.y - 1, camera_lookat.z + 1);

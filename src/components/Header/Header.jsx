@@ -25,7 +25,7 @@ const Header = () => {
 
     const SocialLink = ({ title, icon, link }) => (
         <li className={styles.sociallinkitem} title={title}>
-            <a href={link} target='_blank' rel="noopener noreferrer" aria-label='Github (opens in a new tab)'>
+            <a href={link} target='_blank' rel="noopener noreferrer" aria-label='Github (opens in a new tab)' style={{paddingTop: "10px"}}>
                 <span className={styles.sociallinkindicator}>Github</span>
                 {icon}
             </a>

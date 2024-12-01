@@ -133,4 +133,5 @@
     overflow: hidden; /* Prevent any overflow */
     clip: rect(0, 0, 0, 0); /* Clip the element to zero dimensions */
     border: 0; /* Remove border */
+    color: _variable.$highlight; /* text-slate-200 */
 }
