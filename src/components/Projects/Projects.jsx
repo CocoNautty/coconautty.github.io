@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './Projects.module.scss';
-import air32_devboard from '../../../public/images/projects/Air32_devboard.jpg';
-import custom_zsh_theme from '../../../public/images/projects/custom-zsh-theme.png';
+import air32_devboard from '../../assets/images/projects/Air32_devboard.jpg';
+import custom_zsh_theme from '../../assets/images/projects/custom-zsh-theme.png';
 import {SectionContainer, TitleContainer, CardContainer, ProjectsImage, ProjectsTitle, CardTags, CardList} from '../Containers/Containers';
 
 const Projects = () => {
