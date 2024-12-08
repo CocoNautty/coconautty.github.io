@@ -2,7 +2,6 @@ import { React } from 'react';
 import styles from './Header.module.scss';
 import { AiFillGithub } from "react-icons/ai";
 import { IconContext } from 'react-icons/lib';
-import useScrollSpy from '../Hooks/useScrollspy';
 
 const Header = () => {
     const navLinks = [
@@ -33,8 +32,6 @@ const Header = () => {
         </li>
     );
 
-    const activeSection = useScrollSpy(navLinks.map(link => link.text), 50);
-
     return (
         <header className={styles.header}>
             <div>
@@ -54,7 +51,6 @@ const Header = () => {
                                 key={link.text}
                                 href={link.href}
                                 text={link.text}
-                                isActive={activeSection === link.text}
                             />
                         ))}
                     </ul>

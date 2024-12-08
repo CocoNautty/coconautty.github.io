@@ -12,7 +12,7 @@ const Projects = () => {
                 <CardList>
                     <li style={{marginBottom: '3rem'}}>
                         <CardContainer>
-                            <ProjectsImage src='../../assets/images/projects/Air32_devboard.jpg' alt='Air32 devboard' />
+                            <ProjectsImage src='../../../public/images/projects/Air32_devboard.jpg' alt='Air32 devboard' />
                             <div className={styles.cardcontent}>
                                 <ProjectsTitle
                                     href='https://github.com/CocoNautty/Air32_MiniDevBoard'
@@ -22,6 +22,22 @@ const Projects = () => {
                                     Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur, maxime aliquid praesentium dignissimos eveniet, totam obcaecati aperiam tempora repellat incidunt facere ea. Laborum odio veritatis nam totam facere recusandae fugit.
                                 </p>
                                 <CardTags tags={['Circuit', 'PCB Design', 'Microcontroller', 'Soldering']} />
+                            </div>
+                        </CardContainer>
+                    </li>
+
+                    <li style={{marginBottom: '3rem'}}>
+                        <CardContainer>
+                            <ProjectsImage src='../../../public/images/projects/custom-zsh-theme.png' alt='custom zsh theme' />
+                            <div className={styles.cardcontent}>
+                                <ProjectsTitle
+                                    href='https://github.com/CocoNautty/cocofish-magic'
+                                    title='Custom ZSH Theme that Fits my Taste'
+                                />
+                                <p className={styles.projectscontent}>
+                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur, maxime aliquid praesentium dignissimos eveniet, totam obcaecati aperiam tempora repellat incidunt facere ea. Laborum odio veritatis nam totam facere recusandae fugit.
+                                </p>
+                                <CardTags tags={['Shell', 'Linux', 'ZSH']} />
                             </div>
                         </CardContainer>
                     </li>

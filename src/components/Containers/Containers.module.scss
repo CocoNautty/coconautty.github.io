@@ -215,7 +215,6 @@
   // Aspect Ratio
   position: relative; // Required for aspect ratio
   width: 100%; // Full width
-  padding-top: 56.25%; // Aspect ratio for 16:9 (100% / (16 / 9) = 56.25%)
   
   // To ensure the content fills the aspect ratio box
   & > * {
@@ -229,6 +228,7 @@
 
   border-width: 2px; // border-2
   border-style: solid; // solid border
+  border-radius: 0.25rem;
   border-color: rgba(209, 213, 219, 0.1); // border-slate-200/10 (assuming slate-200 is #d1d5db)
   transition: border-color 0.2s; // transition
 
