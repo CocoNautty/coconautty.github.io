@@ -144,8 +144,8 @@ const ThreeBackground = ({scrollableheight}) => {
         const adjustCameraXY = () => {
             const scrollY = window.scrollY;
 
-            camera.position.y = -scrollY * windowHeight * 0.005 / scrollableheight; // Adjust sensitivity as needed
-            camera.position.x = -scrollY * windowWidth * 0.005 / scrollableheight; // Adjust sensitivity as needed
+            camera.position.y = -scrollY * windowHeight * 0.003 / scrollableheight; // Adjust sensitivity as needed
+            camera.position.x = -scrollY * windowWidth * 0.003 / scrollableheight; // Adjust sensitivity as needed
         }
 
         const adjustOctahedron = () => {
