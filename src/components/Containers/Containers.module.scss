@@ -93,7 +93,7 @@
 
     @media (min-width: 1024px) { // lg
       .cardlist:hover & {
-        opacity: 0.9; // lg:hover:opacity-50
+        opacity: 0.7; // lg:hover:opacity-50
       }
 
       &:hover {
@@ -146,13 +146,13 @@
     }
 }
 
-.experiencetitlecontainer {
+.cardtitlecontainer {
     font-weight: 600; // font-medium
     line-height: 1.375; // leading-snug (typically 1.375 is the line-height for snug)
     color: _variable.$highlight; // text-slate-200 (assuming this is the correct slate color)
 }
 
-.experiencetitle {
+.cardtitle {
     display: inline-flex; // inline-flex
     align-items: baseline; // items-baseline
     font-weight: 600; // font-medium
@@ -209,4 +209,37 @@
     font-weight: 500; // font-medium
     line-height: 1.25; // leading-5 (typically 1.25 is the line-height for this)
     color: _variable.$special; // text-teal-300 (Assuming teal-300 is #26c6da)
+}
+
+.projectsimage {
+  // Aspect Ratio
+  position: relative; // Required for aspect ratio
+  width: 100%; // Full width
+  padding-top: 56.25%; // Aspect ratio for 16:9 (100% / (16 / 9) = 56.25%)
+  
+  // To ensure the content fills the aspect ratio box
+  & > * {
+    position: absolute; // Positioning children absolutely
+    top: 0; // Position to the top
+    left: 0; // Position to the left
+    right: 0; // Position to the right
+    bottom: 0; // Position to the bottom
+    object-fit: cover; // object-cover
+  }
+
+  border-width: 2px; // border-2
+  border-style: solid; // solid border
+  border-color: rgba(209, 213, 219, 0.1); // border-slate-200/10 (assuming slate-200 is #d1d5db)
+  transition: border-color 0.2s; // transition
+
+  // Group hover styles
+  .group:hover & {
+    border-color: rgba(209, 213, 219, 0.3); // group-hover:border-slate-200/30
+  }
+
+  @media (min-width: 640px) { // sm
+    order: 1; // sm:order-1
+    grid-column: span 2; // sm:col-span-2
+    transform: translateY(0.25rem); // sm:translate-y-1 (0.25rem = 4px)
+  }
 }

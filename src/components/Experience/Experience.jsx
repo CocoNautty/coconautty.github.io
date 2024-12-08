@@ -1,32 +1,8 @@
-import {React, useEffect} from 'react';
+import React from 'react';
 import styles from './Experience.module.scss';
 import {SectionContainer, TitleContainer, CardContainer, ExperienceTimeSpan, ExperienceTitle, CardTags, CardList} from '../Containers/Containers';
 
 const Experience = () => {
-
-    useEffect(() => {
-        const cardList = document.querySelector(`.${styles.cardlist}`);
-        const cardContainers = document.querySelectorAll(`.${styles.cardcontainer}`);
-
-        if (cardList) {
-            const handleMouseEnter = () => {
-                cardContainers.forEach(container => container.classList.add(styles.dimmed));
-            };
-
-            const handleMouseLeave = () => {
-                cardContainers.forEach(container => container.classList.remove(styles.dimmed));
-            };
-
-            cardList.addEventListener('mouseenter', handleMouseEnter);
-            cardList.addEventListener('mouseleave', handleMouseLeave);
-
-            // Cleanup event listeners on component unmount
-            return () => {
-                cardList.removeEventListener('mouseenter', handleMouseEnter);
-                cardList.removeEventListener('mouseleave', handleMouseLeave);
-            };
-        }
-    }, []);
 
     return(
         <SectionContainer id='Experience'>

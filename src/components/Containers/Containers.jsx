@@ -79,9 +79,9 @@ const ExperienceTimeSpan = ({ children }) => {
 
 const ExperienceTitle = ({ href, position, department }) => {
     return (
-        <h3 className={styles.experiencetitlecontainer}>
+        <h3 className={styles.cardtitlecontainer}>
             <div>
-                <a className={styles.experiencetitle} href={href} target='_blank' rel='noreferrer noopener'>
+                <a className={styles.cardtitle} href={href} target='_blank' rel='noreferrer noopener'>
                     <span className={styles.titlecard} />
                     <span>
                         {position}{' - '}
@@ -89,6 +89,28 @@ const ExperienceTitle = ({ href, position, department }) => {
                             {department}
                             <BiLink style={{marginLeft: '0.25rem'}} />
                         </span>
+                    </span>
+                </a>
+            </div>
+        </h3>
+    );
+}
+
+const ProjectsImage = ({ src, alt }) => {
+    return (
+        <img className={styles.projectsimage} src={src} alt={alt} loading='lazy' decoding='async'/>
+    );
+}
+
+const ProjectsTitle = ({ href, title }) => {
+    return (
+        <h3 className={styles.cardtitlecontainer}>
+            <div>
+                <a className={styles.cardtitle} href={href} target='_blank' rel='noreferrer noopener'>
+                    <span className={styles.titlecard} />
+                    <span>
+                        {title}
+                        <BiLink style={{marginLeft: '0.25rem'}} />
                     </span>
                 </a>
             </div>
@@ -118,4 +140,4 @@ const CardList = ({ children }) => {
     );
 }
 
-export { SectionContainer, TitleContainer, WordBlock, InlineLink, CardContainer, ExperienceTimeSpan, ExperienceTitle, CardTags, CardList };
+export { SectionContainer, TitleContainer, WordBlock, InlineLink, CardContainer, ExperienceTimeSpan, ExperienceTitle, CardTags, CardList, ProjectsImage, ProjectsTitle };

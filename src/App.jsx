@@ -3,6 +3,7 @@ import Header from './components/Header/Header';
 import About from './components/About/About';
 import Experience from './components/Experience/Experience';
 import ThreeBackground from './components/ThreejsBackground/Background';
+import Projects from './components/Projects/Projects';
 
 function App() {
     const scrollableRef = useRef(null);
@@ -29,6 +30,7 @@ function App() {
                     <main id='content' className='MainContent' ref={scrollableRef}>
                         <About />
                         <Experience />
+                        <Projects />
                     </main>
                 </div>
             </div>
