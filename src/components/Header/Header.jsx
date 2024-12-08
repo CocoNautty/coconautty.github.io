@@ -1,18 +1,19 @@
-import React from 'react';
+import { React } from 'react';
 import styles from './Header.module.scss';
 import { AiFillGithub } from "react-icons/ai";
 import { IconContext } from 'react-icons/lib';
+import useScrollSpy from '../Hooks/useScrollspy';
 
 const Header = () => {
     const navLinks = [
-        { href: "#about", text: "About" },
-        { href: "#experience", text: "Experiences" },
-        { href: "#projects", text: "Projects" },
+        { href: "#About", text: "About" },
+        { href: "#Experience", text: "Experience" },
+        { href: "#Projects", text: "Projects" },
     ];
 
-    const NavLink = ({ href, text }) => (
+    const NavLink = ({ href, text, isActive }) => (
         <li>
-            <a className={styles.jumplinkitem} href={href}>
+            <a className={`${styles.jumplinkitem} ${isActive ? styles.active : ''}`} href={href}>
                 <span className={styles.navindicator}></span>
                 <span className={styles.navtext}>{text}</span>
             </a>
@@ -32,6 +33,8 @@ const Header = () => {
         </li>
     );
 
+    const activeSection = useScrollSpy(navLinks.map(link => link.text), 50);
+
     return (
         <header className={styles.header}>
             <div>
@@ -46,8 +49,13 @@ const Header = () => {
                 </p>
                 <nav className={styles.jumplinks} aria-label='In-page jump links'>
                     <ul className={styles.jumplinklist}>
-                        {navLinks.map(link => (
-                            <NavLink key={link.href} href={link.href} text={link.text} />
+                        {navLinks.map((link) => (
+                            <NavLink
+                                key={link.text}
+                                href={link.href}
+                                text={link.text}
+                                isActive={activeSection === link.text}
+                            />
                         ))}
                     </ul>
                 </nav>

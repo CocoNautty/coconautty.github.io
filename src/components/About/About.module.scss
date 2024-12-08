@@ -8,6 +8,6 @@
     // color: #e2e8f0; /* text-slate-200 */
 
     @media screen and (min-width: _variable.$large) {
-        display: none;
+        opacity: 0;;
     }
 }

@@ -1,0 +1,28 @@
+@use "../../styles/_variable.scss" as _variable;
+@use "../../components/Containers/Containers.module.scss" as _containers;
+
+.sectiontitle {
+    font-size: 0.875rem; /* text-sm */
+    font-weight: bold; /* font-bold */
+    text-transform: uppercase; /* uppercase */
+    letter-spacing: 0.1em; /* tracking-widest */
+    // color: #e2e8f0; /* text-slate-200 */
+
+    @media screen and (min-width: _variable.$large) {
+        opacity: 0;
+    }
+}
+
+.cardcontent {
+    z-index: 10; // z-10
+
+    @media (min-width: 640px) { // sm
+        grid-column: span 6/span 6; // sm:col-span-6
+    }
+}
+
+.experiencecontent {
+    margin-top: 0.5rem; // mt-2 (0.5rem = 8px)
+    font-size: 0.875rem; // text-sm (0.875rem = 14px)
+    line-height: 1.5; // leading-normal (typically 1.5 is the line-height for normal)
+}

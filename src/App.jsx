@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState }  from 'react';
 import Header from './components/Header/Header';
 import About from './components/About/About';
+import Experience from './components/Experience/Experience';
 import ThreeBackground from './components/ThreejsBackground/Background';
 
 function App() {
@@ -17,13 +18,17 @@ function App() {
 
     return (
         <div>
-            <ThreeBackground scrollableheight={dimensions.height}/>
+            <div className="background">
+                <ThreeBackground scrollableheight={dimensions.height}/>
+            </div>
+            <div className="overlay"></div>
             <div className="App">
                 <a className="skip" href="#content">Skip to Content</a>
                 <div className="wrapper">
                     <Header />
                     <main id='content' className='MainContent' ref={scrollableRef}>
                         <About />
+                        <Experience />
                     </main>
                 </div>
             </div>
