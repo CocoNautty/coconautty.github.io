@@ -12,7 +12,7 @@ const Projects = () => {
                 <CardList>
                     <li style={{marginBottom: '3rem'}}>
                         <CardContainer>
-                            <ProjectsImage src='../../../public/images/projects/Air32_devboard.jpg' alt='Air32 devboard' />
+                            <ProjectsImage src='../images/projects/Air32_devboard.jpg' alt='Air32 devboard' />
                             <div className={styles.cardcontent}>
                                 <ProjectsTitle
                                     href='https://github.com/CocoNautty/Air32_MiniDevBoard'
@@ -28,7 +28,7 @@ const Projects = () => {
 
                     <li style={{marginBottom: '3rem'}}>
                         <CardContainer>
-                            <ProjectsImage src='../../../public/images/projects/custom-zsh-theme.png' alt='custom zsh theme' />
+                            <ProjectsImage src='../images/projects/custom-zsh-theme.png' alt='custom zsh theme' />
                             <div className={styles.cardcontent}>
                                 <ProjectsTitle
                                     href='https://github.com/CocoNautty/cocofish-magic'
