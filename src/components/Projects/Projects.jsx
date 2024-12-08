@@ -1,5 +1,7 @@
 import React from 'react';
 import styles from './Projects.module.scss';
+import air32_devboard from '../../../public/images/projects/Air32_devboard.jpg';
+import custom_zsh_theme from '../../../public/images/projects/custom-zsh-theme.png';
 import {SectionContainer, TitleContainer, CardContainer, ProjectsImage, ProjectsTitle, CardTags, CardList} from '../Containers/Containers';
 
 const Projects = () => {
@@ -12,7 +14,7 @@ const Projects = () => {
                 <CardList>
                     <li style={{marginBottom: '3rem'}}>
                         <CardContainer>
-                            <ProjectsImage src='../images/projects/Air32_devboard.jpg' alt='Air32 devboard' />
+                            <ProjectsImage src={air32_devboard} alt='Air32 devboard' />
                             <div className={styles.cardcontent}>
                                 <ProjectsTitle
                                     href='https://github.com/CocoNautty/Air32_MiniDevBoard'
@@ -28,7 +30,7 @@ const Projects = () => {
 
                     <li style={{marginBottom: '3rem'}}>
                         <CardContainer>
-                            <ProjectsImage src='../images/projects/custom-zsh-theme.png' alt='custom zsh theme' />
+                            <ProjectsImage src={custom_zsh_theme} alt='custom zsh theme' />
                             <div className={styles.cardcontent}>
                                 <ProjectsTitle
                                     href='https://github.com/CocoNautty/cocofish-magic'
