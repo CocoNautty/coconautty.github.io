@@ -79,6 +79,7 @@
     text-transform: uppercase; /* uppercase */
     letter-spacing: 0.1em; /* tracking-widest */
     color: _variable.$main-content; /* text-slate-500 */
+    transition: all 0.2s ease; /* transition-all */
 }
 
 .jumplinkitem {
@@ -86,16 +87,19 @@
     align-items: center; /* items-center */
     padding-top: 0.75rem; /* py-3 (padding top and bottom) */
     padding-bottom: 0.75rem; /* py-3 */
+    cursor: pointer; /* cursor-pointer */
 
     &:hover .navindicator,
     &:focus-visible .navindicator,
     &.active .navindicator {
+        transition: all 0.2s ease; /* transition-all */
         width: 4rem;
     }
 
     &:hover .navtext,
     &:focus-visible .navtext,
     &.active .navtext {
+        transition: all 0.2s ease; /* transition-all */
         color: _variable.$highlight;
     }
 }

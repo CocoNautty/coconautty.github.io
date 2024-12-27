@@ -1,23 +1,63 @@
-import { React } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './Header.module.scss';
 import { AiFillGithub } from "react-icons/ai";
 import { IconContext } from 'react-icons/lib';
 
 const Header = () => {
+    const [activeLink, setActiveLink] = useState("About");
+
     const navLinks = [
         { href: "#About", text: "About" },
         { href: "#Experience", text: "Experience" },
         { href: "#Projects", text: "Projects" },
     ];
 
-    const NavLink = ({ href, text, isActive }) => (
-        <li>
-            <a className={`${styles.jumplinkitem} ${isActive ? styles.active : ''}`} href={href}>
-                <span className={styles.navindicator}></span>
-                <span className={styles.navtext}>{text}</span>
-            </a>
-        </li>
-    );
+    const determineActiveLink = () => {
+        for (let i = navLinks.length - 1; i >= 0; i--) {
+            const section = document.getElementById(navLinks[i].text);
+            if (section) {
+                const rect = section.getBoundingClientRect();
+                if (rect.top <= 120 && rect.bottom >= 120) {
+                    setActiveLink(navLinks[i].text);
+                    break;
+                }
+            }
+        }
+    }
+
+    useEffect(() => {
+        const scrollHandler = () => {
+            determineActiveLink();
+        }
+
+        window.addEventListener('scroll', scrollHandler, { passive: true });
+
+        return () => {
+            window.removeEventListener('scroll', scrollHandler);
+        }
+    }
+    , []);
+
+    const NavLink = ({ href, text, isActive }) => {
+
+        const scrollToSection = (sectionId) => {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                const marginTop = 100;
+                const scrollToY = section.getBoundingClientRect().top + window.scrollY - marginTop;
+                window.scrollTo({ top: scrollToY, behavior: 'smooth' });
+            }
+        };
+
+        return (
+            <li onClick={() => scrollToSection(text)}>
+                <a className={`${styles.jumplinkitem} ${activeLink === text ? styles.active : ''}`}>
+                    <span className={styles.navindicator}></span>
+                    <span className={styles.navtext}>{text}</span>
+                </a>
+            </li>
+        )
+    };
 
     const sociallinks = [
         { title: "github", icon: <AiFillGithub/>, link: "https://github.com/CocoNautty"},
