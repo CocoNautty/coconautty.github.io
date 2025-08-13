@@ -1,4 +1,7 @@
 import * as THREE from 'three';
+import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
+import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
+import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
 import { GEOMETRY_CONSTANTS, MATERIAL_CONSTANTS } from '../constants';
 
 /**
@@ -21,18 +24,26 @@ export const calculateSize = (windowWidth) => {
 };
 
 /**
- * Creates efficient lines from edges using LineSegments
+ * Creates thick lines from edges using LineSegments2
  * @param {number} geometryIndex - Index for storing line references
  * @param {THREE.EdgesGeometry} edges - Edge geometry
- * @param {number} thickness - Line thickness (not used with LineSegments)
+ * @param {number} thickness - Line thickness in pixels
  * @param {Array} linesStorage - Array to store line references
- * @returns {THREE.LineSegments} - LineSegments object
+ * @param {number} windowWidth - Current window width for resolution
+ * @param {number} windowHeight - Current window height for resolution
+ * @returns {LineSegments2} - LineSegments2 object
  */
-export const createThickLines = (geometryIndex, edges, thickness, linesStorage) => {
-  const lineMaterial = new THREE.LineBasicMaterial({ 
+export const createThickLines = (geometryIndex, edges, thickness, linesStorage, windowWidth = 800, windowHeight = 600) => {
+  // Convert EdgesGeometry to LineSegmentsGeometry
+  const lineGeometry = new LineSegmentsGeometry();
+  lineGeometry.fromEdgesGeometry(edges);
+
+  const lineMaterial = new LineMaterial({ 
     color: MATERIAL_CONSTANTS.LINE_COLOR, 
     transparent: true, 
-    opacity: MATERIAL_CONSTANTS.LINE_OPACITY 
+    opacity: MATERIAL_CONSTANTS.LINE_OPACITY,
+    linewidth: thickness * 1000, // Convert to appropriate scale
+    resolution: new THREE.Vector2(windowWidth, windowHeight)
   });
 
   // Initialize array for this geometry if not exists
@@ -40,7 +51,8 @@ export const createThickLines = (geometryIndex, edges, thickness, linesStorage) 
     linesStorage[geometryIndex] = [];
   }
 
-  const lineSegments = new THREE.LineSegments(edges, lineMaterial);
+  const lineSegments = new LineSegments2(lineGeometry, lineMaterial);
+  lineSegments.computeLineDistances();
   linesStorage[geometryIndex].push(lineSegments);
 
   return lineSegments;
@@ -50,28 +62,41 @@ export const createThickLines = (geometryIndex, edges, thickness, linesStorage) 
  * Updates existing lines with new geometry
  * @param {number} geometryIndex - Index of lines to update
  * @param {THREE.EdgesGeometry} edges - New edge geometry
- * @param {number} thickness - Line thickness (not used with LineSegments)
+ * @param {number} thickness - Line thickness
  * @param {Array} linesStorage - Array containing line references
+ * @param {number} windowWidth - Current window width for resolution
+ * @param {number} windowHeight - Current window height for resolution
  */
-export const updateThickLines = (geometryIndex, edges, thickness, linesStorage) => {
+export const updateThickLines = (geometryIndex, edges, thickness, linesStorage, windowWidth = 800, windowHeight = 600) => {
   const lines = linesStorage[geometryIndex];
   if (!lines || lines.length === 0) return;
 
   const lineSegments = lines[0];
   if (lineSegments) {
-    // Dispose old geometry and assign new one
+    // Dispose old geometry and create new one
     lineSegments.geometry.dispose();
-    lineSegments.geometry = edges;
+    
+    const newLineGeometry = new LineSegmentsGeometry();
+    newLineGeometry.fromEdgesGeometry(edges);
+    lineSegments.geometry = newLineGeometry;
+    lineSegments.computeLineDistances();
+
+    // Update material resolution
+    if (lineSegments.material && lineSegments.material.resolution) {
+      lineSegments.material.resolution.set(windowWidth, windowHeight);
+    }
   }
 };
 
 /**
  * Creates all geometric shapes for the scene
  * @param {number} sizeRef - Current size reference
- * @param {Array} cylindersStorage - Storage for cylinder references
+ * @param {Array} linesStorage - Storage for line references
+ * @param {number} windowWidth - Current window width for resolution
+ * @param {number} windowHeight - Current window height for resolution
  * @returns {object} - Object containing all created geometries and groups
  */
-export const createAllGeometries = (sizeRef, linesStorage) => {
+export const createAllGeometries = (sizeRef, linesStorage, windowWidth = 800, windowHeight = 600) => {
   // Create geometries
   const geometry0 = new THREE.IcosahedronGeometry(
     GEOMETRY_CONSTANTS.ICOSAHEDRON.RADIUS_MULTIPLIER * 4, 
@@ -94,15 +119,33 @@ export const createAllGeometries = (sizeRef, linesStorage) => {
   const edges2 = new THREE.EdgesGeometry(geometry2);
   const edges3 = new THREE.EdgesGeometry(geometry3);
 
-  // Create line groups
-  const icosahedron = createThickLines(0, edges0, 0.02, linesStorage);
-  const dodecahedron = createThickLines(1, edges1, 0.02, linesStorage);
-  const octahedron = createThickLines(2, edges2, 0.02, linesStorage);
-  const cube = createThickLines(3, edges3, 0.02, linesStorage);
+  // Create line groups with thick lines
+  const icosahedron = createThickLines(0, edges0, 0.002, linesStorage, windowWidth, windowHeight);
+  const dodecahedron = createThickLines(1, edges1, 0.002, linesStorage, windowWidth, windowHeight);
+  const octahedron = createThickLines(2, edges2, 0.002, linesStorage, windowWidth, windowHeight);
+  const cube = createThickLines(3, edges3, 0.002, linesStorage, windowWidth, windowHeight);
 
   return {
     geometries: { geometry0, geometry1, geometry2, geometry3 },
     edges: { edges0, edges1, edges2, edges3 },
     groups: { icosahedron, dodecahedron, octahedron, cube }
   };
+};
+
+/**
+ * Updates resolution for all line materials
+ * @param {Array} linesStorage - Array containing line references
+ * @param {number} windowWidth - Current window width
+ * @param {number} windowHeight - Current window height
+ */
+export const updateLineResolution = (linesStorage, windowWidth, windowHeight) => {
+  linesStorage.forEach(lines => {
+    if (lines && lines.length > 0) {
+      lines.forEach(lineSegments => {
+        if (lineSegments.material && lineSegments.material.resolution) {
+          lineSegments.material.resolution.set(windowWidth, windowHeight);
+        }
+      });
+    }
+  });
 };

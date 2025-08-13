@@ -50,7 +50,7 @@ export const LAYOUT_CONSTANTS = {
 export const GEOMETRY_CONSTANTS = {
   ICOSAHEDRON: {
     RADIUS_MULTIPLIER: 1 * 2 / 3,
-    DETAIL: 1
+    DETAIL: 2
   },
   DODECAHEDRON: {
     RADIUS_MULTIPLIER: 4 / 9
@@ -67,8 +67,7 @@ export const GEOMETRY_CONSTANTS = {
 // Material constants
 export const MATERIAL_CONSTANTS = {
   LINE_COLOR: 0x565460,
-  LINE_OPACITY: 0.3,
-  CYLINDER_SEGMENTS: 4
+  LINE_OPACITY: 0.9
 };
 
 // Position constants for 3D objects

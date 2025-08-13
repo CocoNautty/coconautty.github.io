@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { ANIMATION_CONSTANTS, OBJECT_POSITIONS } from '../constants';
-import { createAllGeometries, calculateSize, updateThickLines, createDodecahedron } from '../utils/geometryUtils';
+import { createAllGeometries, calculateSize, updateThickLines, createDodecahedron, updateLineResolution } from '../utils/geometryUtils';
 import { useScrollPosition } from './useScrollPosition';
 import { useMouseInteraction } from './useMouseInteraction';
 import { useWindowResize } from './useWindowResize';
@@ -74,7 +74,7 @@ export const useThreeScene = (scrollableHeight) => {
 
     // Create geometries
     sizeRef.current = calculateSize(windowSize.width);
-    const { groups } = createAllGeometries(sizeRef.current, linesRef.current);
+    const { groups } = createAllGeometries(sizeRef.current, linesRef.current, windowSize.width, windowSize.height);
     
     // Add objects to scene
     Object.values(groups).forEach(group => scene.add(group));
@@ -285,10 +285,13 @@ export const useThreeScene = (scrollableHeight) => {
 
     // Update dodecahedron and cube geometries
     const newGeometry1 = createDodecahedron(newSize * 4 / 9);
-    updateThickLines(1, new THREE.EdgesGeometry(newGeometry1), 0.02, linesRef.current);
+    updateThickLines(1, new THREE.EdgesGeometry(newGeometry1), 0.002, linesRef.current, windowSize.width, windowSize.height);
 
     const newGeometry3 = new THREE.BoxGeometry(newSize * 0.4 * 2 / 3, newSize * 0.4 * 2 / 3, newSize * 0.4 * 2 / 3);
-    updateThickLines(3, new THREE.EdgesGeometry(newGeometry3), 0.02, linesRef.current);
+    updateThickLines(3, new THREE.EdgesGeometry(newGeometry3), 0.002, linesRef.current, windowSize.width, windowSize.height);
+
+    // Update resolution for all line materials
+    updateLineResolution(linesRef.current, windowSize.width, windowSize.height);
 
     // Force render after resize
     needsRenderRef.current = true;
