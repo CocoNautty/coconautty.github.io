@@ -45,7 +45,7 @@ export const projectsData = [
       src: custom_zsh_theme,
       alt: "Custom ZSH theme screenshot showing terminal interface"
     },
-    description: "A developer-focused ZSH theme engineered to solve Python environment visibility issues in terminal workflows. Built on af-magic foundation with custom color system for conda/Python environment prompts, preventing environment names from blending into terminal output. Features flexible color customization through both numeric and named parameters, complete installation documentation, and seamless conda integration for enhanced developer productivity.",
+    description: "A developer-focused ZSH theme engineered to solve Python environment visibility issues in terminal workflows. Built on af-magic foundation with custom color system for conda/Python environment prompts, preventing environment names from blending into terminal output. Features flexible color customization, complete installation documentation, and seamless conda integration for enhanced developer productivity.",
     tags: ["Developer Tools", "ZSH", "Python Integration", "Terminal Customization", "UX Design"]
   }
 ];
