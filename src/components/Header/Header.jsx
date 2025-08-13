@@ -1,57 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styles from './Header.module.scss';
 import { AiFillGithub } from "react-icons/ai";
 import { IconContext } from 'react-icons/lib';
+import { personalInfo } from '../../data/personal';
+import { useActiveSection } from '../../hooks/useActiveSection';
+import { useSmoothScroll } from '../../hooks/useSmoothScroll';
 
 const Header = () => {
-    const [activeLink, setActiveLink] = useState("About");
+    const { navigation, socialLinks } = personalInfo;
+    const activeSection = useActiveSection(navigation);
+    const scrollToSection = useSmoothScroll();
 
-    const navLinks = [
-        { href: "#About", text: "About" },
-        { href: "#Experience", text: "Experience" },
-        { href: "#Projects", text: "Projects" },
-    ];
-
-    const determineActiveLink = () => {
-        for (let i = navLinks.length - 1; i >= 0; i--) {
-            const section = document.getElementById(navLinks[i].text);
-            if (section) {
-                const rect = section.getBoundingClientRect();
-                if (rect.top <= 120 && rect.bottom >= 120) {
-                    setActiveLink(navLinks[i].text);
-                    break;
-                }
-            }
-        }
-    }
-
-    useEffect(() => {
-        const scrollHandler = () => {
-            determineActiveLink();
-        }
-
-        window.addEventListener('scroll', scrollHandler, { passive: true });
-
-        return () => {
-            window.removeEventListener('scroll', scrollHandler);
-        }
-    }
-    , []);
-
-    const NavLink = ({ href, text, isActive }) => {
-
-        const scrollToSection = (sectionId) => {
-            const section = document.getElementById(sectionId);
-            if (section) {
-                const marginTop = 100;
-                const scrollToY = section.getBoundingClientRect().top + window.scrollY - marginTop;
-                window.scrollTo({ top: scrollToY, behavior: 'smooth' });
-            }
-        };
+    const NavLink = ({ href, text }) => {
 
         return (
             <li onClick={() => scrollToSection(text)}>
-                <a className={`${styles.jumplinkitem} ${activeLink === text ? styles.active : ''}`}>
+                <a className={`${styles.jumplinkitem} ${activeSection === text ? styles.active : ''}`}>
                     <span className={styles.navindicator}></span>
                     <span className={styles.navtext}>{text}</span>
                 </a>
@@ -59,15 +23,11 @@ const Header = () => {
         )
     };
 
-    const sociallinks = [
-        { title: "github", icon: <AiFillGithub/>, link: "https://github.com/CocoNautty"},
-    ]
-
-    const SocialLink = ({ title, icon, link }) => (
+    const SocialLink = ({ title, link, ariaLabel }) => (
         <li className={styles.sociallinkitem} title={title}>
-            <a href={link} target='_blank' rel="noopener noreferrer" aria-label='Github (opens in a new tab)' style={{paddingTop: "10px"}}>
-                <span className={styles.sociallinkindicator}>Github</span>
-                {icon}
+            <a href={link} target='_blank' rel="noopener noreferrer" aria-label={ariaLabel} style={{paddingTop: "10px"}}>
+                <span className={styles.sociallinkindicator}>{title}</span>
+                <AiFillGithub />
             </a>
         </li>
     );
@@ -77,16 +37,16 @@ const Header = () => {
             <div>
                 <a href="/">
                     <h1 className={styles.title}>
-                        Yixuan Chen (陈奕煊)
+                        {personalInfo.name}
                     </h1>
                 </a>
-                <h2 className={styles.subtitle}>MSI Student in UMich</h2>
+                <h2 className={styles.subtitle}>{personalInfo.title}</h2>
                 <p className={styles.shortdescription}>
-                    I learn, I code, I build. I put things together and make them work.
+                    {personalInfo.description}
                 </p>
                 <nav className={styles.jumplinks} aria-label='In-page jump links'>
                     <ul className={styles.jumplinklist}>
-                        {navLinks.map((link) => (
+                        {navigation.map((link) => (
                             <NavLink
                                 key={link.text}
                                 href={link.href}
@@ -98,8 +58,13 @@ const Header = () => {
             </div>
             <ul className={styles.sociallinks}>
                 <IconContext.Provider value={{ className: styles.sociallinkicon }}>
-                    {sociallinks.map(link => (
-                        <SocialLink key={link.title} title={link.title} icon={link.icon} link={link.link} />
+                    {socialLinks.map(link => (
+                        <SocialLink 
+                            key={link.title} 
+                            title={link.title} 
+                            link={link.link} 
+                            ariaLabel={link.ariaLabel} 
+                        />
                     ))}
                 </IconContext.Provider>
             </ul>

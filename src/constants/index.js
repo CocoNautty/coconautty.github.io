@@ -1,0 +1,81 @@
+// Animation and interaction constants
+export const ANIMATION_CONSTANTS = {
+  SCROLL_SENSITIVITY: {
+    CAMERA_XY: 0.003,
+    OCTAHEDRON: {
+      POSITION: 0.002,
+      Y_POSITION: 0.007,
+      Z_POSITION: 0.002,
+      ROTATION_X: 0.00002,
+      ROTATION_Y: 0.00004
+    }
+  },
+  
+  ROTATION_SPEEDS: {
+    RANDOM_RANGE: 0.003,
+    TARGET_RANGE: 0.01,
+    DODECAHEDRON_FACTOR: 0.4,
+    OCTAHEDRON_FACTOR: 0.3,
+    ICOSAHEDRON_FACTOR: 0.2
+  },
+  
+  MOUSE_INTERACTION: {
+    ROTATION_SENSITIVITY: 0.00003,
+    INACTIVITY_TIMEOUT: 10,
+    THROTTLE_DELAY: 10
+  },
+  
+  TARGET_SPEED_CHANGE_INTERVAL: 2000,
+  
+  THREE_JS: {
+    CAMERA_WIDTH: 5,
+    PIXEL_RATIO_MULTIPLIER: 1.5,
+    CANVAS_SIZE_MULTIPLIER: 1.5,
+    CAMERA_Z_POSITION: 14,
+    LINE_THICKNESS: 0.02,
+    NEAR_PLANE: 0.1,
+    FAR_PLANE: 1000
+  }
+};
+
+// Layout constants
+export const LAYOUT_CONSTANTS = {
+  NAVIGATION_OFFSET: 120,
+  SCROLL_MARGIN_TOP: 100,
+  STICKY_TITLE_THRESHOLD: 5,
+  MOBILE_BREAKPOINT: 1024
+};
+
+// Geometry constants
+export const GEOMETRY_CONSTANTS = {
+  ICOSAHEDRON: {
+    RADIUS_MULTIPLIER: 1 * 2 / 3,
+    DETAIL: 3
+  },
+  DODECAHEDRON: {
+    RADIUS_MULTIPLIER: 4 / 9
+  },
+  OCTAHEDRON: {
+    RADIUS_MULTIPLIER: 1 * 2 / 3,
+    DETAIL: 0
+  },
+  CUBE: {
+    SIZE_MULTIPLIER: 0.4 * 2 / 3
+  }
+};
+
+// Material constants
+export const MATERIAL_CONSTANTS = {
+  LINE_COLOR: 0x565460,
+  LINE_OPACITY: 0.3,
+  CYLINDER_SEGMENTS: 8
+};
+
+// Position constants for 3D objects
+export const OBJECT_POSITIONS = {
+  CAMERA_LOOKAT: { x: 4, y: 1.8, z: 0 },
+  ICOSAHEDRON: { x: 0.4, y: 0.2, z: -2 },
+  DODECAHEDRON: { x: 4.7, y: 4, z: 1 },
+  OCTAHEDRON_INITIAL: { x: -1, y: 8, z: 1 },
+  CUBE_OFFSET: { x: 0, y: -1, z: 1 }
+};

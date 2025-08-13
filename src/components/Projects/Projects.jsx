@@ -1,8 +1,7 @@
 import React from 'react';
 import styles from './Projects.module.scss';
-import air32_devboard from '../../assets/images/projects/Air32_devboard.jpg';
-import custom_zsh_theme from '../../assets/images/projects/custom-zsh-theme.png';
 import {SectionContainer, TitleContainer, CardContainer, ProjectsImage, ProjectsTitle, CardTags, CardList} from '../Containers/Containers';
+import { projectsData } from '../../data/projects';
 
 const Projects = () => {
     return(
@@ -12,42 +11,27 @@ const Projects = () => {
             </TitleContainer>
             <div>
                 <CardList>
-                    <li style={{marginBottom: '3rem'}}>
-                        <CardContainer>
-                            <ProjectsImage src={air32_devboard} alt='Air32 devboard' />
-                            <div className={styles.cardcontent}>
-                                <ProjectsTitle
-                                    href='https://github.com/CocoNautty/Air32_MiniDevBoard'
-                                    title='Air32 Chip Super Tiny Dev Board'
-                                />
-                                <p className={styles.projectscontent}>
-                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur, maxime aliquid praesentium dignissimos eveniet, totam obcaecati aperiam tempora repellat incidunt facere ea. Laborum odio veritatis nam totam facere recusandae fugit.
-                                </p>
-                                <CardTags tags={['Circuit', 'PCB Design', 'Microcontroller', 'Soldering']} />
-                            </div>
-                        </CardContainer>
-                    </li>
-
-                    <li style={{marginBottom: '3rem'}}>
-                        <CardContainer>
-                            <ProjectsImage src={custom_zsh_theme} alt='custom zsh theme' />
-                            <div className={styles.cardcontent}>
-                                <ProjectsTitle
-                                    href='https://github.com/CocoNautty/cocofish-magic'
-                                    title='Custom ZSH Theme that Fits my Taste'
-                                />
-                                <p className={styles.projectscontent}>
-                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur, maxime aliquid praesentium dignissimos eveniet, totam obcaecati aperiam tempora repellat incidunt facere ea. Laborum odio veritatis nam totam facere recusandae fugit.
-                                </p>
-                                <CardTags tags={['Shell', 'Linux', 'ZSH']} />
-                            </div>
-                        </CardContainer>
-                    </li>
-
+                    {projectsData.map((project) => (
+                        <li key={project.id} style={{marginBottom: '3rem'}}>
+                            <CardContainer>
+                                <ProjectsImage src={project.image.src} alt={project.image.alt} />
+                                <div className={styles.cardcontent}>
+                                    <ProjectsTitle
+                                        href={project.href}
+                                        title={project.title}
+                                    />
+                                    <p className={styles.projectscontent}>
+                                        {project.description}
+                                    </p>
+                                    <CardTags tags={project.tags} />
+                                </div>
+                            </CardContainer>
+                        </li>
+                    ))}
                 </CardList>
             </div>
         </SectionContainer>
     );
 }
 
-export default Projects;
+export default React.memo(Projects);

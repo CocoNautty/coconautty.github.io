@@ -15,12 +15,11 @@ function App() {
         }
     }, []);
 
-    console.log("Scollable height: ", dimensions.height);
 
     return (
         <div>
             <div className="background">
-                <ThreeBackground scrollableheight={dimensions.height}/>
+                <ThreeBackground scrollableHeight={dimensions.height}/>
             </div>
             <div className="overlay"></div>
             <div className="App">

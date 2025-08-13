@@ -1,41 +1,18 @@
 import styles from './Containers.module.scss';
-import React, { useEffect, useState, useRef } from 'react';
+import React from 'react';
 import { BiLink } from "react-icons/bi";
+import { useStickyState } from '../../hooks/useStickyState';
 
-const SectionContainer = ({ id, children }) => {
+const SectionContainer = React.memo(({ id, children }) => {
     return (
         <section id={id} className={styles.sectioncontainer}>
             {children}
         </section>
     );
-}
+});
 
 const TitleContainer = ({ children }) => {
-    const [isPinned, setIsPinned] = useState(false);
-    const stickyRef = useRef(null);
-
-    useEffect(() => {
-        const eventHandler = () => {
-        if (stickyRef.current) {
-            const windowWidth = window.innerWidth;
-            const { top } = stickyRef.current.getBoundingClientRect();
-            if (windowWidth <= 1024) {
-                // Check if the sticky element is pinned (top is 0 or below the viewport)
-                setIsPinned(top <= 5);
-                console.log("isPinned: ", isPinned);
-            }
-        }
-        };
-
-        window.addEventListener('scroll', eventHandler);
-        window.addEventListener('resize', eventHandler);
-
-        // Clean up the event listener on component unmount
-        return () => {
-            window.removeEventListener('scroll', eventHandler);
-            window.removeEventListener('resize', eventHandler);
-        };
-    }, []);
+    const { stickyRef, isPinned } = useStickyState();
 
     return (
         <div ref={stickyRef} className={`${styles.titlecontainer} ${isPinned ? styles.Pinned : styles.notPinned}`}>
@@ -44,38 +21,38 @@ const TitleContainer = ({ children }) => {
     );
 }
 
-const WordBlock = ({ children }) => {
+const WordBlock = React.memo(({ children }) => {
     return (
         <p className={styles.wordblock}>
             {children}
         </p>
     );
-}
+});
 
-const InlineLink = ({ href, children }) => {
+const InlineLink = React.memo(({ href, children }) => {
     return (
         <a className={styles.inlinelink} href={href} target='_blank' rel='noreferrer noopener'>
             {' '}{children}{' '}
         </a>
     )
-}
+});
 
-const CardContainer = ({ children }) => {
+const CardContainer = React.memo(({ children }) => {
     return (
         <div className={styles.cardcontainer}>
             <div className={styles.card} />
             {children}
         </div>
     );
-}
+})
 
-const ExperienceTimeSpan = ({ children }) => {
+const ExperienceTimeSpan = React.memo(({ children }) => {
     return (
         <header className={styles.experiencetimespan}>
             {children}
         </header>
     );
-}
+})
 
 const ExperienceTitle = ({ href, position, department }) => {
     return (
@@ -85,7 +62,7 @@ const ExperienceTitle = ({ href, position, department }) => {
                     <span className={styles.titlecard} />
                     <span>
                         {position}{' - '}
-                        <span style={{dislpay: 'inline-block'}}>
+                        <span style={{display: 'inline-block'}}>
                             {department}
                             <BiLink style={{marginLeft: '0.25rem'}} />
                         </span>
@@ -118,7 +95,7 @@ const ProjectsTitle = ({ href, title }) => {
     );
 }
 
-const CardTags = ({tags}) => {
+const CardTags = React.memo(({tags}) => {
     return (
         <ul className={styles.cardtagscontainer}>
             {tags.map((tag, index) => (
@@ -130,14 +107,14 @@ const CardTags = ({tags}) => {
             ))}
         </ul>
     );
-}
+})
 
-const CardList = ({ children }) => {
+const CardList = React.memo(({ children }) => {
     return (
         <ol className={styles.cardlist}>
             {children}
         </ol>
     );
-}
+})
 
 export { SectionContainer, TitleContainer, WordBlock, InlineLink, CardContainer, ExperienceTimeSpan, ExperienceTitle, CardTags, CardList, ProjectsImage, ProjectsTitle };
