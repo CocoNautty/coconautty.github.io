@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { ANIMATION_CONSTANTS, OBJECT_POSITIONS } from '../constants';
-import { createAllGeometries, calculateSize, updateThickLines, createDodecahedron, updateLineResolution } from '../utils/geometryUtils';
+import { ANIMATION_CONSTANTS, OBJECT_POSITIONS, MATERIAL_CONSTANTS } from '../constants';
+import { createAllGeometries, calculateSize, updateThickLines, createDodecahedron, updateLineResolution, updateVelocityBlur } from '../utils/geometryUtils';
 import { useScrollPosition } from './useScrollPosition';
 import { useMouseInteraction } from './useMouseInteraction';
 import { useWindowResize } from './useWindowResize';
@@ -22,10 +22,31 @@ export const useThreeScene = (scrollableHeight) => {
   const lastRenderTimeRef = useRef(0);
   const linesRef = useRef([[], [], [], []]);
   const sizeRef = useRef(1);
+
+  // Adaptive performance tracking
+  const frameTimeHistoryRef = useRef([]);
+  const currentTargetFrameTimeRef = useRef(ANIMATION_CONSTANTS.PERFORMANCE.MIN_FRAME_TIME);
+  const performanceModeRef = useRef('normal'); // 'normal', 'reduced', 'minimal'
   
   // Rotation state refs
   const rotationSpeedRef = useRef({ x: 0, y: 0, z: 0 });
   const targetSpeedRef = useRef({ x: 0, y: 0, z: 0 });
+
+  // Smooth interpolation state refs (camera target removed)
+  const octahedronTargetRef = useRef(new THREE.Vector3(
+    OBJECT_POSITIONS.OCTAHEDRON_INITIAL.x,
+    OBJECT_POSITIONS.OCTAHEDRON_INITIAL.y,
+    OBJECT_POSITIONS.OCTAHEDRON_INITIAL.z
+  ));
+  const currentScrollRef = useRef(0);
+
+  // Temporal smoothing for position history (camera removed)
+  const positionHistoryRef = useRef({
+    octahedron: []
+  });
+  const velocityRef = useRef({
+    octahedron: new THREE.Vector3()
+  });
 
   // Custom hooks for interactions
   const scrollPosition = useScrollPosition(16);
@@ -34,6 +55,87 @@ export const useThreeScene = (scrollableHeight) => {
     ANIMATION_CONSTANTS.MOUSE_INTERACTION.INACTIVITY_TIMEOUT
   );
   const windowSize = useWindowResize(150);
+
+  // Helper function for temporal position smoothing
+  const updatePositionHistory = (objectName, currentPosition) => {
+    const history = positionHistoryRef.current[objectName];
+    const maxSamples = ANIMATION_CONSTANTS.PERFORMANCE.MOTION_BLUR_SAMPLES;
+    
+    // Add current position to history
+    history.push(currentPosition.clone());
+    
+    // Keep only the last N samples
+    if (history.length > maxSamples) {
+      history.shift();
+    }
+    
+    // Calculate velocity (change in position)
+    if (history.length >= 2) {
+      const prevPos = history[history.length - 2];
+      const currPos = history[history.length - 1];
+      velocityRef.current[objectName].subVectors(currPos, prevPos);
+    }
+    
+    // Return smoothed position using exponential moving average
+    if (history.length === 1) {
+      return currentPosition.clone();
+    }
+    
+    const smoothed = new THREE.Vector3();
+    let totalWeight = 0;
+    
+    for (let i = 0; i < history.length; i++) {
+      const weight = Math.pow(ANIMATION_CONSTANTS.PERFORMANCE.TEMPORAL_SMOOTHING_FACTOR, history.length - 1 - i);
+      smoothed.addScaledVector(history[i], weight);
+      totalWeight += weight;
+    }
+    
+    return smoothed.divideScalar(totalWeight);
+  };
+
+  // Performance monitoring and adaptive scaling
+  const updatePerformance = (frameTime) => {
+    const history = frameTimeHistoryRef.current;
+    history.push(frameTime);
+    
+    // Keep only last 10 frame times for average
+    if (history.length > 10) {
+      history.shift();
+    }
+    
+    // Calculate average frame time
+    const avgFrameTime = history.reduce((sum, time) => sum + time, 0) / history.length;
+    
+    // Determine performance mode and adjust settings
+    if (avgFrameTime > ANIMATION_CONSTANTS.PERFORMANCE.MAX_FRAME_TIME) {
+      // Poor performance - reduce quality
+      if (performanceModeRef.current !== 'minimal') {
+        performanceModeRef.current = 'minimal';
+        currentTargetFrameTimeRef.current = ANIMATION_CONSTANTS.PERFORMANCE.MAX_FRAME_TIME;
+        
+        // Reduce line opacity for better performance
+        updateVelocityBlur(linesRef.current, new THREE.Vector3(), 0, 0.5);
+      }
+    } else if (avgFrameTime > ANIMATION_CONSTANTS.PERFORMANCE.ADAPTIVE_FPS_THRESHOLD) {
+      // Moderate performance - some reductions
+      if (performanceModeRef.current !== 'reduced') {
+        performanceModeRef.current = 'reduced';
+        currentTargetFrameTimeRef.current = 50; // 20fps
+        
+        // Slightly reduce line opacity
+        updateVelocityBlur(linesRef.current, new THREE.Vector3(), 0, 0.7);
+      }
+    } else {
+      // Good performance - full quality
+      if (performanceModeRef.current !== 'normal') {
+        performanceModeRef.current = 'normal';
+        currentTargetFrameTimeRef.current = ANIMATION_CONSTANTS.PERFORMANCE.MIN_FRAME_TIME;
+        
+        // Restore full line opacity
+        updateVelocityBlur(linesRef.current, new THREE.Vector3(), 0, MATERIAL_CONSTANTS.LINE_OPACITY);
+      }
+    }
+  };
 
   // Initialize scene
   useEffect(() => {
@@ -129,20 +231,48 @@ export const useThreeScene = (scrollableHeight) => {
     setRandomTargetSpeed();
     setRandomRotationSpeeds();
 
-    // Animation loop with on-demand rendering
+    // Animation loop with adaptive performance monitoring
     const animate = (currentTime) => {
       if (!prefersReducedMotion && sceneRef.current && rendererRef.current && cameraRef.current) {
         const { dodecahedron, octahedron, icosahedron } = objectsRef.current;
         
-        // Limit to 30fps for better performance
+        // Adaptive frame rate limiting
         const deltaTime = currentTime - lastRenderTimeRef.current;
-        if (deltaTime < 33) { // ~30fps (1000ms/30fps = 33ms)
+        if (deltaTime < currentTargetFrameTimeRef.current) {
           animationRef.current = requestAnimationFrame(animate);
           return;
         }
+        
+        // Update performance metrics
+        updatePerformance(deltaTime);
         lastRenderTimeRef.current = currentTime;
 
         let hasChanges = false;
+
+        // Camera positioning removed from animation loop - handled in scroll useEffect for immediate response
+
+        if (octahedron) {
+          const oldOctPos = octahedron.position.clone();
+          octahedron.position.lerp(octahedronTargetRef.current, ANIMATION_CONSTANTS.PERFORMANCE.SMOOTH_FACTOR);
+          
+          // Track position for velocity calculation only (don't apply to actual position)
+          updatePositionHistory('octahedron', octahedron.position);
+          
+          if (oldOctPos.distanceTo(octahedron.position) > 0.001) hasChanges = true;
+        }
+
+        // Apply velocity-based blur effects (octahedron velocity only)
+        const octahedronVelocity = velocityRef.current.octahedron;
+        
+        if (octahedronVelocity.length() > 0.01) {
+          updateVelocityBlur(
+            linesRef.current, 
+            octahedronVelocity, 
+            ANIMATION_CONSTANTS.PERFORMANCE.VELOCITY_BLUR_FACTOR,
+            MATERIAL_CONSTANTS.LINE_OPACITY
+          );
+          hasChanges = true;
+        }
 
         // Rotate objects based on target and current speeds
         if (dodecahedron) {
@@ -199,25 +329,30 @@ export const useThreeScene = (scrollableHeight) => {
     };
   }, [windowSize.width, windowSize.height]);
 
-  // Handle scroll-based animations
+  // Handle scroll-based animations (reverted to original direct approach)
   useEffect(() => {
     if (!cameraRef.current || !objectsRef.current.octahedron || !scrollableHeight) return;
 
     const camera = cameraRef.current;
     const octahedron = objectsRef.current.octahedron;
     const scrollY = scrollPosition.scrollY;
+    const scrollDelta = scrollY - currentScrollRef.current;
+    currentScrollRef.current = scrollY;
 
-    // Adjust camera position based on scroll
+    // Direct camera position updates (immediate response like original)
     camera.position.y = -scrollY * windowSize.height * ANIMATION_CONSTANTS.SCROLL_SENSITIVITY.CAMERA_XY / scrollableHeight;
-    camera.position.x = -scrollY * windowSize.width * ANIMATION_CONSTANTS.SCROLL_SENSITIVITY.CAMERA_XY / scrollableHeight;
+    camera.position.x = 0; // Keep horizontal fixed to prevent drift
 
-    // Adjust octahedron position and rotation
-    octahedron.position.x = OBJECT_POSITIONS.OCTAHEDRON_INITIAL.x + scrollY * windowSize.height * ANIMATION_CONSTANTS.SCROLL_SENSITIVITY.OCTAHEDRON.POSITION / scrollableHeight;
-    octahedron.position.y = OBJECT_POSITIONS.OCTAHEDRON_INITIAL.y + 5 - scrollY * windowSize.height * ANIMATION_CONSTANTS.SCROLL_SENSITIVITY.OCTAHEDRON.Y_POSITION / scrollableHeight;
-    octahedron.position.z = OBJECT_POSITIONS.OCTAHEDRON_INITIAL.z - scrollY * windowSize.height * ANIMATION_CONSTANTS.SCROLL_SENSITIVITY.OCTAHEDRON.Z_POSITION / scrollableHeight;
+    // Update octahedron target position for smooth movement
+    octahedronTargetRef.current.set(
+      OBJECT_POSITIONS.OCTAHEDRON_INITIAL.x + scrollY * windowSize.height * ANIMATION_CONSTANTS.SCROLL_SENSITIVITY.OCTAHEDRON.POSITION / scrollableHeight,
+      OBJECT_POSITIONS.OCTAHEDRON_INITIAL.y + 5 - scrollY * windowSize.height * ANIMATION_CONSTANTS.SCROLL_SENSITIVITY.OCTAHEDRON.Y_POSITION / scrollableHeight,
+      OBJECT_POSITIONS.OCTAHEDRON_INITIAL.z - scrollY * windowSize.height * ANIMATION_CONSTANTS.SCROLL_SENSITIVITY.OCTAHEDRON.Z_POSITION / scrollableHeight
+    );
 
-    octahedron.rotation.x += ANIMATION_CONSTANTS.SCROLL_SENSITIVITY.OCTAHEDRON.ROTATION_X * scrollY;
-    octahedron.rotation.y += ANIMATION_CONSTANTS.SCROLL_SENSITIVITY.OCTAHEDRON.ROTATION_Y * scrollY;
+    // Update octahedron rotation (immediate for responsiveness)
+    octahedron.rotation.x += ANIMATION_CONSTANTS.SCROLL_SENSITIVITY.OCTAHEDRON.ROTATION_X * scrollDelta;
+    octahedron.rotation.y += ANIMATION_CONSTANTS.SCROLL_SENSITIVITY.OCTAHEDRON.ROTATION_Y * scrollDelta;
 
     // Update camera look at
     camera.lookAt(

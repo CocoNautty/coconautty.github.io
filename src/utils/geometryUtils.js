@@ -149,3 +149,26 @@ export const updateLineResolution = (linesStorage, windowWidth, windowHeight) =>
     }
   });
 };
+
+/**
+ * Updates line materials based on velocity for motion blur effect
+ * @param {Array} linesStorage - Array containing line references
+ * @param {THREE.Vector3} velocity - Current velocity vector
+ * @param {number} velocityBlurFactor - Factor for velocity-based opacity
+ * @param {number} baseOpacity - Base opacity from constants
+ */
+export const updateVelocityBlur = (linesStorage, velocity, velocityBlurFactor, baseOpacity) => {
+  const velocityMagnitude = velocity.length();
+  const blurOpacity = Math.max(0.3, baseOpacity - velocityMagnitude * velocityBlurFactor);
+  
+  linesStorage.forEach(lines => {
+    if (lines && lines.length > 0) {
+      lines.forEach(lineSegments => {
+        if (lineSegments.material && lineSegments.material.opacity !== undefined) {
+          lineSegments.material.opacity = blurOpacity;
+          lineSegments.material.needsUpdate = true;
+        }
+      });
+    }
+  });
+};
