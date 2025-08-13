@@ -21,91 +21,47 @@ export const calculateSize = (windowWidth) => {
 };
 
 /**
- * Creates thick lines from edges using cylinder geometry
- * @param {number} geometryIndex - Index for storing cylinders
+ * Creates efficient lines from edges using LineSegments
+ * @param {number} geometryIndex - Index for storing line references
  * @param {THREE.EdgesGeometry} edges - Edge geometry
- * @param {number} thickness - Line thickness
- * @param {Array} cylindersStorage - Array to store cylinder references
- * @returns {THREE.Group} - Group containing all cylinder meshes
+ * @param {number} thickness - Line thickness (not used with LineSegments)
+ * @param {Array} linesStorage - Array to store line references
+ * @returns {THREE.LineSegments} - LineSegments object
  */
-export const createThickLines = (geometryIndex, edges, thickness, cylindersStorage) => {
-  const group = new THREE.Group();
-  const lineMaterial = new THREE.MeshBasicMaterial({ 
+export const createThickLines = (geometryIndex, edges, thickness, linesStorage) => {
+  const lineMaterial = new THREE.LineBasicMaterial({ 
     color: MATERIAL_CONSTANTS.LINE_COLOR, 
     transparent: true, 
     opacity: MATERIAL_CONSTANTS.LINE_OPACITY 
   });
 
   // Initialize array for this geometry if not exists
-  if (!cylindersStorage[geometryIndex]) {
-    cylindersStorage[geometryIndex] = [];
+  if (!linesStorage[geometryIndex]) {
+    linesStorage[geometryIndex] = [];
   }
 
-  for (let i = 0; i < edges.attributes.position.count; i += 2) {
-    const start = new THREE.Vector3().fromBufferAttribute(edges.attributes.position, i);
-    const end = new THREE.Vector3().fromBufferAttribute(edges.attributes.position, i + 1);
-    const direction = new THREE.Vector3().subVectors(end, start);
-    const length = direction.length();
-    const midpoint = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
+  const lineSegments = new THREE.LineSegments(edges, lineMaterial);
+  linesStorage[geometryIndex].push(lineSegments);
 
-    const cylinderGeometry = new THREE.CylinderGeometry(
-      thickness, 
-      thickness, 
-      length, 
-      MATERIAL_CONSTANTS.CYLINDER_SEGMENTS
-    );
-    const cylinder = new THREE.Mesh(cylinderGeometry, lineMaterial);
-
-    // Position and orient the cylinder
-    cylinder.position.copy(midpoint);
-    cylinder.quaternion.setFromUnitVectors(
-      new THREE.Vector3(0, 1, 0), 
-      direction.clone().normalize()
-    );
-
-    group.add(cylinder);
-    cylindersStorage[geometryIndex].push(cylinder);
-  }
-
-  return group;
+  return lineSegments;
 };
 
 /**
- * Updates existing thick lines with new geometry
- * @param {number} geometryIndex - Index of cylinders to update
+ * Updates existing lines with new geometry
+ * @param {number} geometryIndex - Index of lines to update
  * @param {THREE.EdgesGeometry} edges - New edge geometry
- * @param {number} thickness - Line thickness
- * @param {Array} cylindersStorage - Array containing cylinder references
+ * @param {number} thickness - Line thickness (not used with LineSegments)
+ * @param {Array} linesStorage - Array containing line references
  */
-export const updateThickLines = (geometryIndex, edges, thickness, cylindersStorage) => {
-  const cylinders = cylindersStorage[geometryIndex];
-  if (!cylinders) return;
+export const updateThickLines = (geometryIndex, edges, thickness, linesStorage) => {
+  const lines = linesStorage[geometryIndex];
+  if (!lines || lines.length === 0) return;
 
-  for (let i = 0; i < edges.attributes.position.count; i += 2) {
-    const start = new THREE.Vector3().fromBufferAttribute(edges.attributes.position, i);
-    const end = new THREE.Vector3().fromBufferAttribute(edges.attributes.position, i + 1);
-    const direction = new THREE.Vector3().subVectors(end, start);
-    const length = direction.length();
-    const midpoint = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
-
-    const cylinder = cylinders[i / 2];
-    if (cylinder) {
-      // Dispose old geometry and create new one
-      cylinder.geometry.dispose();
-      cylinder.geometry = new THREE.CylinderGeometry(
-        thickness, 
-        thickness, 
-        length, 
-        MATERIAL_CONSTANTS.CYLINDER_SEGMENTS
-      );
-
-      // Update position and orientation
-      cylinder.position.copy(midpoint);
-      cylinder.quaternion.setFromUnitVectors(
-        new THREE.Vector3(0, 1, 0), 
-        direction.clone().normalize()
-      );
-    }
+  const lineSegments = lines[0];
+  if (lineSegments) {
+    // Dispose old geometry and assign new one
+    lineSegments.geometry.dispose();
+    lineSegments.geometry = edges;
   }
 };
 
@@ -115,7 +71,7 @@ export const updateThickLines = (geometryIndex, edges, thickness, cylindersStora
  * @param {Array} cylindersStorage - Storage for cylinder references
  * @returns {object} - Object containing all created geometries and groups
  */
-export const createAllGeometries = (sizeRef, cylindersStorage) => {
+export const createAllGeometries = (sizeRef, linesStorage) => {
   // Create geometries
   const geometry0 = new THREE.IcosahedronGeometry(
     GEOMETRY_CONSTANTS.ICOSAHEDRON.RADIUS_MULTIPLIER * 4, 
@@ -139,10 +95,10 @@ export const createAllGeometries = (sizeRef, cylindersStorage) => {
   const edges3 = new THREE.EdgesGeometry(geometry3);
 
   // Create line groups
-  const icosahedron = createThickLines(0, edges0, 0.02, cylindersStorage);
-  const dodecahedron = createThickLines(1, edges1, 0.02, cylindersStorage);
-  const octahedron = createThickLines(2, edges2, 0.02, cylindersStorage);
-  const cube = createThickLines(3, edges3, 0.02, cylindersStorage);
+  const icosahedron = createThickLines(0, edges0, 0.02, linesStorage);
+  const dodecahedron = createThickLines(1, edges1, 0.02, linesStorage);
+  const octahedron = createThickLines(2, edges2, 0.02, linesStorage);
+  const cube = createThickLines(3, edges3, 0.02, linesStorage);
 
   return {
     geometries: { geometry0, geometry1, geometry2, geometry3 },

@@ -18,7 +18,9 @@ export const useThreeScene = (scrollableHeight) => {
   const cameraRef = useRef(null);
   const objectsRef = useRef({});
   const animationRef = useRef(null);
-  const cylindersRef = useRef([[], [], [], []]);
+  const needsRenderRef = useRef(true);
+  const lastRenderTimeRef = useRef(0);
+  const linesRef = useRef([[], [], [], []]);
   const sizeRef = useRef(1);
   
   // Rotation state refs
@@ -72,7 +74,7 @@ export const useThreeScene = (scrollableHeight) => {
 
     // Create geometries
     sizeRef.current = calculateSize(windowSize.width);
-    const { groups } = createAllGeometries(sizeRef.current, cylindersRef.current);
+    const { groups } = createAllGeometries(sizeRef.current, linesRef.current);
     
     // Add objects to scene
     Object.values(groups).forEach(group => scene.add(group));
@@ -127,32 +129,52 @@ export const useThreeScene = (scrollableHeight) => {
     setRandomTargetSpeed();
     setRandomRotationSpeeds();
 
-    // Animation loop
-    const animate = () => {
+    // Animation loop with on-demand rendering
+    const animate = (currentTime) => {
       if (!prefersReducedMotion && sceneRef.current && rendererRef.current && cameraRef.current) {
         const { dodecahedron, octahedron, icosahedron } = objectsRef.current;
+        
+        // Limit to 30fps for better performance
+        const deltaTime = currentTime - lastRenderTimeRef.current;
+        if (deltaTime < 33) { // ~30fps (1000ms/30fps = 33ms)
+          animationRef.current = requestAnimationFrame(animate);
+          return;
+        }
+        lastRenderTimeRef.current = currentTime;
+
+        let hasChanges = false;
 
         // Rotate objects based on target and current speeds
         if (dodecahedron) {
+          const oldRotation = { ...dodecahedron.rotation };
           dodecahedron.rotation.x -= (targetSpeedRef.current.x - rotationSpeedRef.current.x) * ANIMATION_CONSTANTS.ROTATION_SPEEDS.DODECAHEDRON_FACTOR;
           dodecahedron.rotation.y -= (targetSpeedRef.current.y - rotationSpeedRef.current.y) * ANIMATION_CONSTANTS.ROTATION_SPEEDS.DODECAHEDRON_FACTOR;
           dodecahedron.rotation.z -= (targetSpeedRef.current.z - rotationSpeedRef.current.z) * ANIMATION_CONSTANTS.ROTATION_SPEEDS.DODECAHEDRON_FACTOR;
+          if (Math.abs(oldRotation.x - dodecahedron.rotation.x) > 0.001) hasChanges = true;
         }
 
         if (octahedron) {
+          const oldRotation = { ...octahedron.rotation };
           octahedron.rotation.x += (targetSpeedRef.current.x - rotationSpeedRef.current.x) * ANIMATION_CONSTANTS.ROTATION_SPEEDS.OCTAHEDRON_FACTOR;
           octahedron.rotation.y += (targetSpeedRef.current.y - rotationSpeedRef.current.y) * ANIMATION_CONSTANTS.ROTATION_SPEEDS.OCTAHEDRON_FACTOR;
           octahedron.rotation.z += (targetSpeedRef.current.z - rotationSpeedRef.current.z) * ANIMATION_CONSTANTS.ROTATION_SPEEDS.OCTAHEDRON_FACTOR;
+          if (Math.abs(oldRotation.x - octahedron.rotation.x) > 0.001) hasChanges = true;
         }
 
         // Auto-rotate icosahedron when mouse is not active
         if (icosahedron && !mouseState.isActive) {
+          const oldRotation = { ...icosahedron.rotation };
           icosahedron.rotation.x += rotationSpeedRef.current.x * ANIMATION_CONSTANTS.ROTATION_SPEEDS.ICOSAHEDRON_FACTOR;
           icosahedron.rotation.y += rotationSpeedRef.current.y * ANIMATION_CONSTANTS.ROTATION_SPEEDS.ICOSAHEDRON_FACTOR;
           icosahedron.rotation.z += rotationSpeedRef.current.z * ANIMATION_CONSTANTS.ROTATION_SPEEDS.ICOSAHEDRON_FACTOR;
+          if (Math.abs(oldRotation.x - icosahedron.rotation.x) > 0.001) hasChanges = true;
         }
 
-        rendererRef.current.render(sceneRef.current, cameraRef.current);
+        // Only render if there are changes or forced render needed
+        if (hasChanges || needsRenderRef.current) {
+          rendererRef.current.render(sceneRef.current, cameraRef.current);
+          needsRenderRef.current = false;
+        }
       }
       animationRef.current = requestAnimationFrame(animate);
     };
@@ -203,6 +225,9 @@ export const useThreeScene = (scrollableHeight) => {
       OBJECT_POSITIONS.CAMERA_LOOKAT.y,
       OBJECT_POSITIONS.CAMERA_LOOKAT.z
     );
+
+    // Force a render since scroll changed the scene
+    needsRenderRef.current = true;
   }, [scrollPosition.scrollY, scrollableHeight, windowSize.width, windowSize.height]);
 
   // Handle mouse interactions
@@ -218,6 +243,9 @@ export const useThreeScene = (scrollableHeight) => {
       // Apply mouse-based rotation
       icosahedron.rotation.x -= mouseState.displacement.y * ANIMATION_CONSTANTS.MOUSE_INTERACTION.ROTATION_SENSITIVITY;
       icosahedron.rotation.y -= mouseState.displacement.x * ANIMATION_CONSTANTS.MOUSE_INTERACTION.ROTATION_SENSITIVITY;
+      
+      // Force render on mouse interaction
+      needsRenderRef.current = true;
     } else if (!mouseState.isActive) {
       // Restore automatic rotation when mouse becomes inactive
       rotationSpeedRef.current = {
@@ -257,10 +285,13 @@ export const useThreeScene = (scrollableHeight) => {
 
     // Update dodecahedron and cube geometries
     const newGeometry1 = createDodecahedron(newSize * 4 / 9);
-    updateThickLines(1, new THREE.EdgesGeometry(newGeometry1), 0.02, cylindersRef.current);
+    updateThickLines(1, new THREE.EdgesGeometry(newGeometry1), 0.02, linesRef.current);
 
     const newGeometry3 = new THREE.BoxGeometry(newSize * 0.4 * 2 / 3, newSize * 0.4 * 2 / 3, newSize * 0.4 * 2 / 3);
-    updateThickLines(3, new THREE.EdgesGeometry(newGeometry3), 0.02, cylindersRef.current);
+    updateThickLines(3, new THREE.EdgesGeometry(newGeometry3), 0.02, linesRef.current);
+
+    // Force render after resize
+    needsRenderRef.current = true;
   }, [windowSize.width, windowSize.height]);
 
   return mountRef;
