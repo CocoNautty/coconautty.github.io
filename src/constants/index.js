@@ -73,7 +73,7 @@ export const MATERIAL_CONSTANTS = {
 
 // Position constants for 3D objects
 export const OBJECT_POSITIONS = {
-  CAMERA_LOOKAT: { x: 4, y: 1.8, z: 0 },
+  CAMERA_LOOKAT: { x: 3.5, y: 1.8, z: 0 },
   ICOSAHEDRON: { x: 0.4, y: 0.2, z: -2 },
   DODECAHEDRON: { x: 4.7, y: 4, z: 1 },
   OCTAHEDRON_INITIAL: { x: -1, y: 8, z: 1 },
