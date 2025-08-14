@@ -12,7 +12,8 @@ const ThreeBackground = ({ scrollableHeight }) => {
                 top: '-10%', 
                 left: '-10%', 
                 width: '120%', 
-                height: '120%', 
+                height: '120vh', /* Fallback for older browsers */
+                height: '120svh', /* Modern: stable viewport when mobile UI visible */
                 zIndex: -1 
             }} 
         />
